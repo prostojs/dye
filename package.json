@@ -1,6 +1,6 @@
 {
   "name": "@prostojs/dye",
-  "version": "0.0.1-alpha.0",
+  "version": "0.0.1-alpha.1",
   "description": "Easy and light console styling tool",
   "main": "index.js",
   "module": "dist/dye.esm-bundler.js",
