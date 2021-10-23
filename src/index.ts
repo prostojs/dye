@@ -253,7 +253,7 @@ export type TRGBTypes = TRGB | TBgRGB | TRGB256 | TBgRGB256
  * @param args[]
  * @returns (text: string | number, mode?: 'OPEN' | 'CLOSE') => string
  */
-export function dye(...args: (TDyeColorAll | TDyeBgColor | TDyeModifier | TRGBTypes)[]) {
+export function dye(...args: (TDyeColorAll | TDyeBgColor | TDyeModifier | TRGBTypes)[]): TDyeStylist {
     let open = ''
     let close = ''
     const closeObject: Record<string, string> = {}
@@ -302,7 +302,7 @@ export function dye(...args: (TDyeColorAll | TDyeBgColor | TDyeModifier | TRGBTy
     for (const closing of Object.values(closeObject)) {
         close += closing
     }
-    const styleFunc = (text: string | number) => `${ open }${ text }${ close }`
+    const styleFunc: TDyeStylist = (text: string | number) => `${ open }${ text }${ close }`
     styleFunc.open = open 
     styleFunc.close = close
     return styleFunc
@@ -310,6 +310,12 @@ export function dye(...args: (TDyeColorAll | TDyeBgColor | TDyeModifier | TRGBTy
 
 dye.strip = (coloredText: string): string => {
     return coloredText.replace(/\x1b\[[^m]+m/g, '')
+}
+
+export interface TDyeStylist {
+    (text: string | number): string;
+    open: string;
+    close: string;
 }
 
 function checkRGBNumber(n: number | string, component: 'r' | 'g' | 'b', limit = 255): number {
