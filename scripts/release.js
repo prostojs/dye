@@ -6,6 +6,7 @@ const semver = require('semver')
 const chalk = require('chalk')
 const run = (bin, args, opts = {}) =>
   execa(bin, args, { stdio: 'inherit', ...opts })
+const bin = name => path.resolve(__dirname, '../node_modules/.bin/' + name)  
 const step = msg => console.log(chalk.cyan(msg))
 
 const branch = execa.sync('git', ['branch', '--show-current']).stdout
