@@ -6,9 +6,11 @@
     <img src="https://img.shields.io/badge/Dependencies-0-green?style=for-the-badge" />
 </p>
 
-Easy and light console styling tool.
+Got sick of `chalk` or other coloring libraries?
 
-Supports plain colors, modifiers, 256 color mode and true color mode (16m colors)
+Here's **easy and light** console styling tool. 🔥🔥🔥 Create **your styles** and reuse them easily. 💙💚💛💗
+
+Supports plain colors, modifiers, **256 color mode** and **true color mode** (16m colors)
 
 ## Install
 
@@ -26,40 +28,60 @@ console.log(bold('Text In Bold'))
 
 <img src="./docs/colors.png" style="max-width: 600px" />
 
-### dye (coloring)
-Returns a `style` function based on input arguments.
+## Colors and modifiers
+Function `dye` returns a `style` function based on input arguments.
+You can pass arguments in any order.
 
-Supports plain colors: `BLACK`, `RED`, `GREEN`, `YELLOW`, `BLUE`, `MAGENTA`, `CYAN`, `WHITE`.
+Supported arguments (IDE will help as it's all well typed with TS):
+1. Plain colors: `BLACK`, `RED`, `GREEN`, `YELLOW`, `BLUE`, `MAGENTA`, `CYAN`,;`WHITE`,
+2. Prefix `BG_` turns color to background color (`BG_RED`);
+3. Suffix `_BRIGHT` makes color brighter (`RED_BRIGHT`, `BG_RED_BRIGHT`);
+4. Grayscale colors: `[BG_]GRAY<01..22>` (`GRAY01`, `GRAY02`, ..., `GRAY22`, `BG_GRAY01`, `BG_GRAY02`, ..., `BG_GRAY22`);
+5. Modifiers: `BOLD`, `DIM`, `ITALIC`, `UNDERSCORE`, `INVERSE`, `HIDDEN`, `CROSSED`;
+6. RGB 256 mode `_5,0,0`, `BG_5,0,0`;
+7. RGB True Color mode `255,0,0`, `BG255,0,0`.
 
-Prefix `BG_` turns color to background color.
-
-Suffix `_BRIGHT` makes color brighter.
-
-Grayscale colors: `GRAY<01..22>` (`GRAY01`, `GRAY02`, ..., `GRAY22`)
-
-Supports modifiers: `BOLD`, `DIM`, `ITALIC`, `UNDERSCORE`, `INVERSE`, `HIDDEN`, `CROSSED`.
-
-Supports True Color rgb:
-```js
-dye('255,0,0') // red True Color
-dye('BG255,0,0') // red True Color background
-```
-
-Supports 256 rgb version:
+### 256 RGB version:
 ```js
 dye('_5,0,0') // red 256
 dye('BG_5,0,0') // red 256 background
 ```
 
-Simple example
+### True Color RGB:
+```js
+dye('255,0,0') // red True Color
+dye('BG255,0,0') // red True Color background
+```
+
+### Simple example
 ```js
 const bold = dye('BOLD')
 console.log(bold('Text In Bold'))
 ```
 
-Advanced example
+### Advanced example
 ```js
 const myStyle = dye('ITALIC', 'BG_RED', '0,0,255')
 console.log(myStyle('Styled italic blue text with red BG'))
 ```
 
+### Super advanced example 😁
+
+```js
+const { dye } = require('../dist/dye.cjs.prod')
+
+const myStyle = dye('ITALIC', 'BG_RED', '0,0,255')
+console.log(myStyle.open)
+console.log('Italic blue text with red background')
+console.log(myStyle.close)
+```
+
+### Strip the styles away
+```js
+const { dye } = require('../dist/dye.cjs.prod')
+
+const myStyle = dye('ITALIC', 'BG_RED', '0,0,255')
+const styledText = myStyle('Styled text')
+console.log(styledText) // styles applied
+console.log(dye.strip(styledText)) // styles removed
+```
