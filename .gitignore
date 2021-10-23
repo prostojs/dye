@@ -3,3 +3,4 @@ explorations
 package-lock.json
 dist
 temp
+coverage
