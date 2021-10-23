@@ -116,7 +116,7 @@ async function main() {
     execa.sync('git', ['push', '--tags'])
 
     step('\nPublishing ...')
-    execa.sync('npm', ['publish'])
+    execa.sync('npm', ['publish', '--access', 'public'])
     
     console.log(chalk.green('✓ All done!'))
 }
