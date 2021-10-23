@@ -33,7 +33,7 @@
     "style"
   ],
   "buildOptions": {
-    "name": "@prostojs/dye",
+    "name": "ProstoDye",
     "formats": [
       "esm-bundler",
       "esm-browser",
