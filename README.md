@@ -1,5 +1,5 @@
 <p align="center">
-<img src="./docs/logo.svg" width="100%" style="max-width: 900px" />
+<img src="./docs/logo.png" width="100%" style="max-width: 900px" />
 <a  href="https://github.com/prostojs/prosto-router/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" />
 </a>
@@ -24,7 +24,7 @@ console.log(bold('Text In Bold'))
 // Text in Bold
 ```
 
-<img src="./docs/colors.png" />
+<img src="./docs/colors.png" style="max-width: 600px" />
 
 ### dye (coloring)
 Returns a `style` function based on input arguments.
