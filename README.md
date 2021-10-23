@@ -1,6 +1,6 @@
 <p align="center">
 <img src="./docs/logo.png" width="100%" style="max-width: 900px" />
-<a  href="https://github.com/prostojs/prosto-router/blob/main/LICENSE">
+<a  href="https://github.com/prostojs/dye/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" />
 </a>
     <img src="https://img.shields.io/badge/Dependencies-0-green?style=for-the-badge" />
