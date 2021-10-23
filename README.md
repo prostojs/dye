@@ -14,7 +14,9 @@ Supports plain colors, modifiers, **256 color mode** and **true color mode** (16
 
 ## Install
 
-`npm install @prostojs/dye`
+npm: `npm install @prostojs/dye`
+
+Via CDN: `<script src="https://unpkg.com/@prostojs/dye"></script>`
 
 ## Usage
 
