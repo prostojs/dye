@@ -1,6 +1,4 @@
-
-import { TDyeBgColor, TDyeColorAll, TDyeModifier } from './colors'
-import { dye } from './index'
+import { dye, TDyeBgColor, TDyeColorAll, TDyeModifier } from './index'
 describe('dye', () => {
     it('must work plain colors', () => {
         const tests: (TDyeColorAll | TDyeBgColor)[] = [
