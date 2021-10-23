@@ -1,3 +1,7 @@
+## [0.0.1](https://github.com/prostojs/dye/compare/v0.0.1-alpha.1...v0.0.1) (2021-10-23)
+
+
+
 ## 0.0.1-alpha.1 (2021-10-23)
 
 
