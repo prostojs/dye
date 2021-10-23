@@ -32,8 +32,8 @@ console.log(bold('Text In Bold'))
 Function `dye` returns a `style` function based on input arguments.
 You can pass arguments in any order.
 
-Supported arguments (IDE will help as it's all well typed with TS):
-1. Plain colors: `BLACK`, `RED`, `GREEN`, `YELLOW`, `BLUE`, `MAGENTA`, `CYAN`,;`WHITE`,
+Supported arguments _(IDE will help as it's all well typed with TS)_:
+1. Plain colors: `BLACK`, `RED`, `GREEN`, `YELLOW`, `BLUE`, `MAGENTA`, `CYAN`,`WHITE`;
 2. Prefix `BG_` turns color to background color (`BG_RED`);
 3. Suffix `_BRIGHT` makes color brighter (`RED_BRIGHT`, `BG_RED_BRIGHT`);
 4. Grayscale colors: `[BG_]GRAY<01..22>` (`GRAY01`, `GRAY02`, ..., `GRAY22`, `BG_GRAY01`, `BG_GRAY02`, ..., `BG_GRAY22`);
@@ -65,7 +65,7 @@ const myStyle = dye('ITALIC', 'BG_RED', '0,0,255')
 console.log(myStyle('Styled italic blue text with red BG'))
 ```
 
-### Super advanced example 😁
+### Super advanced example 😀
 
 ```js
 const { dye } = require('../dist/dye.cjs.prod')
