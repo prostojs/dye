@@ -1,3 +1,12 @@
+# [0.1.0](https://github.com/prostojs/dye/compare/v0.0.3...v0.1.0) (2021-10-24)
+
+
+### Features
+
+* **dye:** attach console; prefix; suffix; hex; ([d174c91](https://github.com/prostojs/dye/commit/d174c913fae855067bedb043507c296ad37953d2))
+
+
+
 ## [0.0.3](https://github.com/prostojs/dye/compare/v0.0.2...v0.0.3) (2021-10-23)
 
 
