@@ -2,14 +2,14 @@ import { dye, TDyeBgColor, TDyeColorAll, TDyeModifier } from './index'
 describe('dye', () => {
     it('must work plain colors', () => {
         const tests: (TDyeColorAll | TDyeBgColor)[] = [
-            'BLACK', 'BG_BLACK', 'BLACK_BRIGHT', 'BG_BLACK_BRIGHT',
-            'RED', 'BG_RED', 'RED_BRIGHT', 'BG_RED_BRIGHT',
-            'GREEN', 'BG_GREEN', 'GREEN_BRIGHT', 'BG_GREEN_BRIGHT',
-            'YELLOW', 'BG_YELLOW', 'YELLOW_BRIGHT', 'BG_YELLOW_BRIGHT',
-            'BLUE', 'BG_BLUE', 'BLUE_BRIGHT', 'BG_BLUE_BRIGHT',
-            'MAGENTA', 'BG_MAGENTA', 'MAGENTA_BRIGHT', 'BG_MAGENTA_BRIGHT',
-            'CYAN', 'BG_CYAN', 'CYAN_BRIGHT', 'BG_CYAN_BRIGHT',
-            'WHITE', 'BG_WHITE', 'WHITE_BRIGHT', 'BG_WHITE_BRIGHT',
+            'black', 'bg-black', 'black-bright', 'bg-black-bright',
+            'red', 'bg-red', 'red-bright', 'bg-red-bright',
+            'green', 'bg-green', 'green-bright', 'bg-green-bright',
+            'yellow', 'bg-yellow', 'yellow-bright', 'bg-yellow-bright',
+            'blue', 'bg-blue', 'blue-bright', 'bg-blue-bright',
+            'magenta', 'bg-magenta', 'magenta-bright', 'bg-magenta-bright',
+            'cyan', 'bg-cyan', 'cyan-bright', 'bg-cyan-bright',
+            'white', 'bg-white', 'white-bright', 'bg-white-bright',
         ]
         tests.forEach(test => {
             const style = dye(test)
@@ -24,28 +24,28 @@ describe('dye', () => {
 
     it('must work with grayscale', () => {
         const tests: (TDyeColorAll | TDyeBgColor)[] = [
-            'GRAY01', 'BG_GRAY01',
-            'GRAY02', 'BG_GRAY02',
-            'GRAY03', 'BG_GRAY03',
-            'GRAY04', 'BG_GRAY04',
-            'GRAY05', 'BG_GRAY05',
-            'GRAY06', 'BG_GRAY06',
-            'GRAY07', 'BG_GRAY07',
-            'GRAY08', 'BG_GRAY08',
-            'GRAY09', 'BG_GRAY09',
-            'GRAY10', 'BG_GRAY10',
-            'GRAY11', 'BG_GRAY11',
-            'GRAY12', 'BG_GRAY12',
-            'GRAY13', 'BG_GRAY13',
-            'GRAY14', 'BG_GRAY14',
-            'GRAY15', 'BG_GRAY15',
-            'GRAY16', 'BG_GRAY16',
-            'GRAY17', 'BG_GRAY17',
-            'GRAY18', 'BG_GRAY18',
-            'GRAY19', 'BG_GRAY19',
-            'GRAY20', 'BG_GRAY20',
-            'GRAY21', 'BG_GRAY21',
-            'GRAY22', 'BG_GRAY22',
+            'gray01', 'bg-gray01',
+            'gray02', 'bg-gray02',
+            'gray03', 'bg-gray03',
+            'gray04', 'bg-gray04',
+            'gray05', 'bg-gray05',
+            'gray06', 'bg-gray06',
+            'gray07', 'bg-gray07',
+            'gray08', 'bg-gray08',
+            'gray09', 'bg-gray09',
+            'gray10', 'bg-gray10',
+            'gray11', 'bg-gray11',
+            'gray12', 'bg-gray12',
+            'gray13', 'bg-gray13',
+            'gray14', 'bg-gray14',
+            'gray15', 'bg-gray15',
+            'gray16', 'bg-gray16',
+            'gray17', 'bg-gray17',
+            'gray18', 'bg-gray18',
+            'gray19', 'bg-gray19',
+            'gray20', 'bg-gray20',
+            'gray21', 'bg-gray21',
+            'gray22', 'bg-gray22',
         ]
         tests.forEach(test => {
             const style = dye(test)
@@ -59,13 +59,13 @@ describe('dye', () => {
     })
     it('must work with modifiers', () => {
         const tests: (TDyeModifier)[] = [
-            'BOLD', 
-            'DIM', 
-            'ITALIC', 
-            'UNDERSCORE', 
-            'INVERSE', 
-            'HIDDEN', 
-            'CROSSED', 
+            'bold', 
+            'dim', 
+            'italic', 
+            'underscore', 
+            'inverse', 
+            'hidden', 
+            'crossed', 
         ]
         tests.forEach(test => {
             const style = dye(test)
@@ -79,8 +79,138 @@ describe('dye', () => {
     })
 
     it('must strip styles', () => {
-        const result = dye('DIM', 'RED')('TEXT')
+        const result = dye('dim', 'red')('TEXT')
         expect(dye.strip(result)).toEqual('TEXT')
+    })
+
+    it('must add prefix', () => {
+        const style = dye('cyan').prefix('[prefix]')
+        expect(style('TEXT').startsWith('\x1b[36m[prefix]\x1b[36m')).toBeTruthy()
+    })
+
+    it('must add suffix', () => {
+        const style = dye('cyan').suffix('[suffix]')
+        expect(style('TEXT').endsWith('[suffix]\x1b[39m')).toBeTruthy()
+    })
+
+    it('must add dynamic prefix', () => {
+        let n = 0
+        const style = dye('cyan').prefix(() => ('' + n++))
+        expect(style('TEXT').startsWith('\x1b[36m0\x1b[36m')).toBeTruthy()
+        expect(style('TEXT').startsWith('\x1b[36m1\x1b[36m')).toBeTruthy()
+        expect(style('TEXT').startsWith('\x1b[36m2\x1b[36m')).toBeTruthy()
+    })
+
+    it('must add dynamic suffix', () => {
+        let n = 0
+        const style = dye('cyan').suffix(() => ('' + n++))
+        expect(style('TEXT').endsWith('0\x1b[39m')).toBeTruthy()
+        expect(style('TEXT').endsWith('1\x1b[39m')).toBeTruthy()
+        expect(style('TEXT').endsWith('2\x1b[39m')).toBeTruthy()
+    })
+
+    it('must attach console', () => {
+        const c = {
+            log: jest.fn(),
+            info: jest.fn(),
+            debug: jest.fn(),
+            warn: jest.fn(),
+            error: jest.fn(),
+        }
+        const style = dye('cyan')
+        const log = style.attachConsole('log', c)
+        const info = style.attachConsole('info', c)
+        const debug = style.attachConsole('debug', c)
+        const warn = style.attachConsole('warn', c)
+        const error = style.attachConsole('error', c)
+        const spy = jest.spyOn(console, 'log')
+        const realconsole = style.attachConsole()
+        const callFunc = jest.fn()
+        const func = style.attachConsole(callFunc)
+        log('log test')
+        info('info test')
+        debug('debug test')
+        warn('warn test')
+        error('error test')
+        realconsole('real console test')
+        func('func test')
+        expect(c.log).toBeCalledWith(style.open, 'log test', style.open, style.close)
+        expect(c.info).toBeCalledWith(style.open, 'info test', style.open, style.close)
+        expect(c.debug).toBeCalledWith(style.open, 'debug test', style.open, style.close)
+        expect(c.warn).toBeCalledWith(style.open, 'warn test', style.open, style.close)
+        expect(c.error).toBeCalledWith(style.open, 'error test', style.open, style.close)
+        expect(spy).toBeCalledWith(style.open, 'real console test', style.open, style.close)
+        expect(callFunc).toBeCalledWith(style.open, 'func test', style.open, style.close)
+    })
+
+    it('must enable/disable console', () => {
+        const style = dye('cyan')
+        const c = {
+            log: jest.fn(),
+            info: jest.fn(),
+            debug: jest.fn(),
+            warn: jest.fn(),
+            error: jest.fn(),
+        }
+        const log = style.attachConsole('log', c)
+        log.disable()
+        log('log test')
+        expect(c.log).toBeCalledTimes(0)
+        log.enable()
+        log('log test')
+        expect(c.log).toBeCalledTimes(1)
+    })
+
+    it('must throw error on wrong value', () => {
+        expect(() => { dye('BOLD' as 'bold') }).toThrowError()
+        expect(() => { dye('260,200,200') }).toThrowError()
+        expect(() => { dye('*5,6,1') }).toThrowError()
+        expect(() => { dye('#f') }).toThrowError()
+        expect(() => { dye('#ffff') }).toThrowError()
+        expect(() => { dye('#ffffa') }).toThrowError()
+        expect(() => { dye('#ffffaaa') }).toThrowError()
+        expect(() => { dye('#rtt') }).toThrowError()
+        expect(() => { dye('20,22q,13' as 'bold') }).toThrowError()
+    })
+
+    it('must process true color', () => {
+        const style = dye('255,100,50')
+        expect(style('test')).toEqual(expect.stringMatching(/^\x1b\[38;2;255;100;50mtest\x1b\[39m$/))
+    })
+
+    it('must process true color BG', () => {
+        const style = dye('bg255,100,50')
+        expect(style('test')).toEqual(expect.stringMatching(/^\x1b\[48;2;255;100;50mtest\x1b\[49m$/))
+    })
+
+    it('must process true color (HEX)', () => {
+        const style = dye('#FF6432')
+        expect(style('test')).toEqual(expect.stringMatching(/^\x1b\[38;2;255;100;50mtest\x1b\[39m$/))
+    })
+
+    it('must process true color BG (HEX)', () => {
+        const style = dye('bg#FF6432')
+        expect(style('test')).toEqual(expect.stringMatching(/^\x1b\[48;2;255;100;50mtest\x1b\[49m$/))
+    })
+
+    it('must process true color (HEX3)', () => {
+        const style = dye('#FA2')
+        expect(style('test')).toEqual(expect.stringMatching(/^\x1b\[38;2;255;170;34mtest\x1b\[39m$/))
+    })
+
+    it('must process true color BG (HEX3)', () => {
+        const style = dye('bg#fff')
+        expect(style('test')).toEqual(expect.stringMatching(/^\x1b\[48;2;255;255;255mtest\x1b\[49m$/))
+    })
+
+    it('must process 256 color', () => {
+        const style = dye('*5,2,0')
+        expect(style('test')).toEqual(expect.stringMatching(/^\x1b\[38;5;208mtest\x1b\[39m$/))
+    })
+
+    it('must process 256 color BG', () => {
+        const style = dye('bg*5,2,0')
+        expect(style('test')).toEqual(expect.stringMatching(/^\x1b\[48;5;208mtest\x1b\[49m$/))
     })
 
 })
