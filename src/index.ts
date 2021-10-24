@@ -254,7 +254,7 @@ export function dye(...args: (TDyeColorAll | TDyeBgColor | TDyeModifier | TRGBTy
 
     if (args.length) {
         for (let i = 0; i < args.length; i++) {
-            const c = args[i];
+            const c = args[i]
             if (c.indexOf(',') > 0 || c.indexOf('#') >= 0) {
                 let bg = false
                 if (c.indexOf('#') >= 0) {
@@ -363,7 +363,7 @@ function getStylist(open: TDyeStylist['open'], close: TDyeStylist['close'], pref
 
 function checkRGBNumber(n: number | string, component: 'r' | 'g' | 'b', limit = 255): number {
     const _n = Number(n)
-    if (Number.isNaN(_n)) throw new Error(`[Dye] Color component "${ component }" must be a number. Received "${ n }".`);
-    if (_n > limit) throw new Error(`[Dye] Color component "${ component }" must be less than ${ limit + 1 }. Received "${ n }".`);
+    if (Number.isNaN(_n)) throw new Error(`[Dye] Color component "${ component }" must be a number. Received "${ n }".`)
+    if (_n > limit) throw new Error(`[Dye] Color component "${ component }" must be less than ${ limit + 1 }. Received "${ n }".`)
     return _n
 }

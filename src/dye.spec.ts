@@ -95,7 +95,7 @@ describe('dye', () => {
 
     it('must add dynamic prefix', () => {
         let n = 0
-        const style = dye('cyan').prefix(() => ('' + n++))
+        const style = dye('cyan').prefix(() => String(n++))
         expect(style('TEXT').startsWith('\x1b[36m0\x1b[36m')).toBeTruthy()
         expect(style('TEXT').startsWith('\x1b[36m1\x1b[36m')).toBeTruthy()
         expect(style('TEXT').startsWith('\x1b[36m2\x1b[36m')).toBeTruthy()
@@ -103,7 +103,7 @@ describe('dye', () => {
 
     it('must add dynamic suffix', () => {
         let n = 0
-        const style = dye('cyan').suffix(() => ('' + n++))
+        const style = dye('cyan').suffix(() => String(n++))
         expect(style('TEXT').endsWith('0\x1b[39m')).toBeTruthy()
         expect(style('TEXT').endsWith('1\x1b[39m')).toBeTruthy()
         expect(style('TEXT').endsWith('2\x1b[39m')).toBeTruthy()
@@ -212,5 +212,4 @@ describe('dye', () => {
         const style = dye('bg*5,2,0')
         expect(style('test')).toEqual(expect.stringMatching(/^\x1b\[48;5;208mtest\x1b\[49m$/))
     })
-
 })

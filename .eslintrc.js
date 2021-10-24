@@ -1,4 +1,4 @@
-const { resolve } = require("path");
+const { resolve } = require('path');
 
 module.exports = {
   parser: '@typescript-eslint/parser',
@@ -19,7 +19,8 @@ module.exports = {
     '**/*.esm-browser.prod.js',
     '**/*.global.js',
     '**/*.global.prod.js',
-    '**/dist/*.d.ts'
+    '**/dist/*.d.ts',
+    'explorations/*'
   ],
   plugins: ['@typescript-eslint/eslint-plugin'],
   extends: [
@@ -36,13 +37,15 @@ module.exports = {
   rules: {
     'indent': ['error', 4, { 'SwitchCase': 1 }],
     'comma-dangle': ['error', 'always-multiline'],
-    'no-multiple-empty-lines': ["error", { "max": 1 }],
-    'lines-between-class-members': ["error", "always"],
-    'padded-blocks': ["error", "never"],
-    'eol-last': ["error", "always"],
+    'no-multiple-empty-lines': ['error', { 'max': 1 }],
+    'lines-between-class-members': ['error', 'always'],
+    'padded-blocks': ['error', 'never'],
+    'eol-last': ['error', 'always'],
+    'quotes': ['error', 'single'],
+    'semi': ['error', 'never'],
+    'eol-last': ['error', 'always'],
 
     // TypeScript
-    '@typescript-eslint/interface-name-prefix': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/no-empty-interface': 'off',
     // '@typescript-eslint/no-explicit-any': 'off',
@@ -55,4 +58,4 @@ module.exports = {
     // Allow debugger during development only
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
   },
-};
+}

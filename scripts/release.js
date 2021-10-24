@@ -83,6 +83,13 @@ async function main() {
             console.log(`(skipped)`)
         }
 
+        step('\nRunning tests...')
+        if (!skipTests && !isDryRun) {
+            await run('npm', ['run', 'lint'])
+        } else {
+            console.log(`(skipped)`)
+        }
+
         // build all packages with types
         step('\nBuilding package...')
         if (!skipBuild && !isDryRun) {
