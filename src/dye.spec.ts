@@ -139,7 +139,7 @@ describe('dye', () => {
         expect(c.debug).toBeCalledWith(style.open, 'debug test', style.open, style.close)
         expect(c.warn).toBeCalledWith(style.open, 'warn test', style.open, style.close)
         expect(c.error).toBeCalledWith(style.open, 'error test', style.open, style.close)
-        expect(spy).toBeCalledWith(style.open, expect.stringMatching(/real\sconsole\stest$/), style.open, style.close)
+        expect(spy).toBeCalledWith(style.open, expect.stringMatching(/real\sconsole\stest/), expect.stringContaining(style.open), expect.stringContaining(style.close))
         expect(callFunc).toBeCalledWith(style.open, 'func test', style.open, style.close)
     })
 
