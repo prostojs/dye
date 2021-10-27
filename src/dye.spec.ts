@@ -139,7 +139,7 @@ describe('dye', () => {
         expect(c.debug).toBeCalledWith(style.open, 'debug test', style.open, style.close)
         expect(c.warn).toBeCalledWith(style.open, 'warn test', style.open, style.close)
         expect(c.error).toBeCalledWith(style.open, 'error test', style.open, style.close)
-        expect(spy).toBeCalledWith(style.open, 'real console test', style.open, style.close)
+        expect(spy).toBeCalledWith(style.open, expect.stringMatching(/real\sconsole\stest$/), style.open, style.close)
         expect(callFunc).toBeCalledWith(style.open, 'func test', style.open, style.close)
     })
 
@@ -159,6 +159,14 @@ describe('dye', () => {
         log.enable()
         log('log test')
         expect(c.log).toBeCalledTimes(1)
+    })
+
+    it('must return stylist', () => {
+        const style = dye('cyan')
+        const log = style.attachConsole('log')
+        const st = log.asStylist()
+        expect(st).toBeDefined()
+        expect(st('test')).toEqual('\x1b[36mtest\x1b[39m')
     })
 
     it('must throw error on wrong value', () => {

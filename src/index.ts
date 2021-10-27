@@ -37,6 +37,7 @@ export interface TDyeStylistConsole {
     (...args: TConsoleArgument): void;
     enable: (v?: boolean) => void
     disable: () => void
+    asStylist: () => TDyeStylist
 }
 
 export type TConsoleMethodName = 'info' | 'log' | 'warn' | 'error' | 'debug'
@@ -320,6 +321,9 @@ dye.strip = (coloredText: string): string => {
     return coloredText.replace(/\x1b\[[^m]+m/g, '')
 }
 
+// fix nodejs console extra spaces with "move left" special character
+const MOVE_LEFT = __BROWSER__ ? '' : '\x1b[D'
+
 function getStylist(open: TDyeStylist['open'], close: TDyeStylist['close'], prefix: string | (() => string), suffix: string | (() => string)): TDyeStylist {
     const getPrefixAndOpen = (p: string) => p ? p + open : ''
     let staticPrefix = ''
@@ -340,21 +344,25 @@ function getStylist(open: TDyeStylist['open'], close: TDyeStylist['close'], pref
     stylist.suffix = (v: string | (() => string)) => getStylist(open, close, prefix, v)
     stylist.attachConsole = (...args: [] | [TConsoleMethodName] | [TConsoleMethodName, TConsoleInterface] | [((...args: TConsoleArgument) => void)]) => {
         const consoleInterface = args[1] || console
+        let isConsole = consoleInterface === console
         let consoleMethod: (...args: TConsoleArgument) => void
         if (typeof args[0] === 'string' || typeof args[0] === 'undefined') {
             consoleMethod = consoleInterface[args[0] as TConsoleMethodName || 'log']
         } else if (typeof args[0] === 'function') {
+            isConsole = false
             consoleMethod = (args[0] as (...args: TConsoleArgument) => void)
         }
+        const moveLeft = isConsole ? MOVE_LEFT : '' // only for console
         let enabled = true
         const dyeConsole: TDyeStylistConsole = (...consoleArgs: TConsoleArgument) => {
             if (enabled) {
-                const newArgs = consoleArgs.map(a => ([a, open])).flat()
+                const newArgs = consoleArgs.map(a => ([typeof a === 'string' ? moveLeft + a : a, open])).flat()
                 consoleMethod(open + getPrefix(), ...newArgs, getSuffix() + close)
             }
         }
         dyeConsole.enable = (v = true) => enabled = v
         dyeConsole.disable = () => enabled = false
+        dyeConsole.asStylist = () => stylist
         return dyeConsole
     }
 

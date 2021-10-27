@@ -4,8 +4,8 @@
   "description": "Easy and light console styling tool",
   "main": "index.js",
   "module": "dist/dye.esm-bundler.js",
-  "unpkg": "dist/dye.global.js",
-  "jsdelivr": "dist/dye.global.js",
+  "unpkg": "dist/dye.global.prod.js",
+  "jsdelivr": "dist/dye.global.prod.js",
   "types": "dist/dye.d.ts",
   "files": [
     "index.js",

@@ -25,6 +25,6 @@
         "experimentalDecorators": true,
         "types": ["jest", "node"],
     },
-    "include": ["packages/**/*", "**/*.spec.ts"],
+    "include": ["src/**/*", "**/*.spec.ts"],
     "exclude": ["node_modules", "explorations"]
 }
