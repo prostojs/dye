@@ -1,3 +1,12 @@
+## [0.1.1](https://github.com/prostojs/dye/compare/v0.1.0...v0.1.1) (2021-10-27)
+
+
+### Bug Fixes
+
+* **console:** remove extra spaces ([6da8440](https://github.com/prostojs/dye/commit/6da84401a6fbfcbb71253b42465292072d71dc52))
+
+
+
 # [0.1.0](https://github.com/prostojs/dye/compare/v0.0.3...v0.1.0) (2021-10-24)
 
 
