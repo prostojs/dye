@@ -8,9 +8,9 @@ const { compress } = require('brotli')
 const args = require('minimist')(process.argv.slice(2))
 const formats = args.formats || args.f
 const devOnly = args.devOnly || args.d
-const prodOnly = !devOnly && (args.prodOnly || args.p)
 const sourceMap = args.sourcemap || args.s
 const isRelease = args.release
+const prodOnly = isRelease || (!devOnly && (args.prodOnly || args.p))
 const buildTypes = true
 const commit = execa.sync('git', ['rev-parse', 'HEAD']).stdout.slice(0, 7)
 
