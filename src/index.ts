@@ -51,7 +51,7 @@ export interface TConsoleInterface {
 }
 
 // consts
-enum PlainColors {
+const enum PlainColors {
     BLACK,
     RED,
     GREEN,
@@ -71,7 +71,7 @@ enum PlainColors {
     WHITE_BRIGHT,
 }
 
-enum Grayscale {
+const enum Grayscale {
     BLACK,
     GRAY01,
     GRAY02,
@@ -98,7 +98,7 @@ enum Grayscale {
     WHITE,
 }
 
-enum Modifiers {
+const enum Modifiers {
     RESET,
     BOLD,
     DIM,
