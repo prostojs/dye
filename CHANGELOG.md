@@ -1,3 +1,12 @@
+## [0.1.2](https://github.com/prostojs/dye/compare/v0.1.1...v0.1.2) (2021-10-27)
+
+
+### Bug Fixes
+
+* **console:** moveLeft before suffix ([c70fde2](https://github.com/prostojs/dye/commit/c70fde2913c7d5b6a61154c90cc8199b3553ef8c))
+
+
+
 ## [0.1.1](https://github.com/prostojs/dye/compare/v0.1.0...v0.1.1) (2021-10-27)
 
 
