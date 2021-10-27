@@ -357,7 +357,7 @@ function getStylist(open: TDyeStylist['open'], close: TDyeStylist['close'], pref
         const dyeConsole: TDyeStylistConsole = (...consoleArgs: TConsoleArgument) => {
             if (enabled) {
                 const newArgs = consoleArgs.map(a => ([typeof a === 'string' ? moveLeft + a : a, open])).flat()
-                consoleMethod(open + getPrefix(), ...newArgs, getSuffix() + close)
+                consoleMethod(open + getPrefix(), ...newArgs, moveLeft + getSuffix() + close)
             }
         }
         dyeConsole.enable = (v = true) => enabled = v

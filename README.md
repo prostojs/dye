@@ -86,7 +86,7 @@ console.log(myStyle('Styled italic blue text with red BG'))
 ### Super advanced example 😀
 
 ```js
-const { dye } = require('../dist/dye.cjs.prod')
+const { dye } = require('@prostojs/dye')
 
 const myStyle = dye('italic', 'bg-red', '0,0,255')
 console.log(myStyle.open)
@@ -173,10 +173,72 @@ setTimeout(() => timedLog('then'), 2000)
 ### Strip the styles away
 In case if you want to strip the colors away for some reason...
 ```js
-const { dye } = require('../dist/dye.cjs.prod')
+const { dye } = require('@prostojs/dye')
 
 const myStyle = dye('italic', 'bg-red', '0,0,255')
 const styledText = myStyle('Styled text')
 console.log(styledText) // styles applied
 console.log(dye.strip(styledText)) // styles removed
 ```
+
+## Best practices
+
+Use semantic names for you styles and not color/modifiers names.
+
+Let's assume we're working on some CLI that leads you through some process. 
+```js
+const { dye } = require('@prostojs/dye')
+
+// first we define some styles we're going to use
+const style = {
+    example: dye('cyan'),
+    keyword: dye('bold', 'underscore').prefix('`').suffix('`'),
+    name: dye('bold').prefix('"').suffix('"'),
+}
+
+// second we define an output message types
+const print = {
+    header: dye('bold').prefix('\n===  ').suffix('  ===\n').attachConsole(),
+    hint: dye('dim', 'blue-bright').attachConsole('info'),
+    step: dye('blue-bright').prefix('\n').suffix('...').attachConsole(),
+    done: dye('green', 'bold').prefix('\n✓ ').attachConsole(),
+    error: dye('red-bright')
+            .prefix('\n' + dye('inverse')(' ERROR ') + '\n')
+            .suffix('\n')
+            .attachConsole('error'),
+}
+
+// here we go informing user on what's going on
+print.header('Welcome everyone!')
+print.hint(
+    'This is the example of how to use',
+    style.name('@prostojs/dye'),
+    '\naccording to the Best Practices.'
+    )
+print.step('Initializing')
+print.step('Preparing')
+print.done('Initialization is done')
+print.step('Processing')
+
+// an error occured!
+print.error(
+    'Unexpected token',
+    style.keyword('weird_token'),
+    'found at parameter',
+    style.name('options'),
+    '\nUse it according to this example:\n',
+    style.example(
+        '\tMy super example\n\t' +
+        style.name('options') +
+        '->' +
+        style.keyword('good_token')
+        )
+)
+
+// we're done
+print.done('End of example')
+```
+
+Here's what we've got in the console:
+
+<img src="./docs/best-practice.png" style="max-width: 700px" />
