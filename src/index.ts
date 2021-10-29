@@ -321,22 +321,33 @@ dye.strip = (coloredText: string): string => {
     return coloredText.replace(/\x1b\[[^m]+m/g, '')
 }
 
-// fix nodejs console extra spaces with "move left" special character
-const MOVE_LEFT = __BROWSER__ ? '' : '\x1b[D'
+dye.reset = modify(Modifiers.RESET)
+dye.bold_off = modify(Modifiers.BOLD_OFF)
+dye.dim_off = modify(Modifiers.DIM_OFF)
+dye.italic_off = modify(Modifiers.ITALIC_OFF)
+dye.underscore_off = modify(Modifiers.UNDERSCORE_OFF)
+dye.blink_slow_off = modify(Modifiers.BLINK_SLOW_OFF)
+dye.blink_rapid_off = modify(Modifiers.BLINK_RAPID_OFF)
+dye.inverse_off = modify(Modifiers.INVERSE_OFF)
+dye.reveal = modify(Modifiers.REVEAL)
+dye.crossed_off = modify(Modifiers.CROSSED_OFF)
 
 function getStylist(open: TDyeStylist['open'], close: TDyeStylist['close'], prefix: string | (() => string), suffix: string | (() => string)): TDyeStylist {
-    const getPrefixAndOpen = (p: string) => p ? p + open : ''
-    let staticPrefix = ''
-    if (typeof prefix ==='string') {
-        staticPrefix = getPrefixAndOpen(prefix)
+    const resetOpen = dye.reset + open
+
+    const getPrefix = () => {
+        const v = typeof prefix === 'string' ? prefix : prefix()
+        return v ? open + v : ''
     }
-    const getPrefix = typeof prefix ==='string' ? () => staticPrefix : () => getPrefixAndOpen(prefix())
-    const getSuffix = typeof suffix === 'string' ? () => suffix : suffix
+    const getSuffix = () => {
+        const v = typeof suffix === 'string' ? suffix : suffix()
+        return (v ? open + v : '') + close
+    }
     
-    const stylist: TDyeStylist = (text: string | number) => {
+    const stylist: TDyeStylist = (...texts: (string | number)[]) => {
         const p = getPrefix() || ''
         const s = getSuffix() || ''
-        return `${ open }${ p }${ text }${ s }${ close }`
+        return `${ p }${ open }${ texts.join(' ') }${ s }`
     }
     stylist.open = open 
     stylist.close = close
@@ -344,20 +355,35 @@ function getStylist(open: TDyeStylist['open'], close: TDyeStylist['close'], pref
     stylist.suffix = (v: string | (() => string)) => getStylist(open, close, prefix, v)
     stylist.attachConsole = (...args: [] | [TConsoleMethodName] | [TConsoleMethodName, TConsoleInterface] | [((...args: TConsoleArgument) => void)]) => {
         const consoleInterface = args[1] || console
-        let isConsole = consoleInterface === console
         let consoleMethod: (...args: TConsoleArgument) => void
         if (typeof args[0] === 'string' || typeof args[0] === 'undefined') {
             consoleMethod = consoleInterface[args[0] as TConsoleMethodName || 'log']
         } else if (typeof args[0] === 'function') {
-            isConsole = false
             consoleMethod = (args[0] as (...args: TConsoleArgument) => void)
         }
-        const moveLeft = isConsole ? MOVE_LEFT : '' // only for console
         let enabled = true
         const dyeConsole: TDyeStylistConsole = (...consoleArgs: TConsoleArgument) => {
             if (enabled) {
-                const newArgs = consoleArgs.map(a => ([typeof a === 'string' ? moveLeft + a : a, open])).flat()
-                consoleMethod(open + getPrefix(), ...newArgs, moveLeft + getSuffix() + close)
+                let first = ''
+                if (typeof consoleArgs[0] === 'string' || typeof consoleArgs[0] === 'number') {
+                    first = resetOpen + String(consoleArgs.shift())
+                }
+                let last = ''
+                if (typeof consoleArgs[consoleArgs.length - 1] === 'string') {
+                    last = resetOpen + (consoleArgs.pop() as string)
+                }
+                const newArgs = consoleArgs.map(
+                    a => typeof a === 'string' ? resetOpen + a : typeof a === 'number' ? resetOpen + String(a) : [dye.reset, a]
+                ).flat()
+                const p = getPrefix()
+                const s = getSuffix()
+                const start = p ? dye.reset + p : ''
+                const end = s === close ? dye.reset : dye.reset + s
+                if (newArgs.length) {
+                    consoleMethod(...[start + first, ...newArgs, last + end].filter(e => typeof e !== 'string' || !!e))
+                } else {
+                    consoleMethod(start + first + last + end)
+                }
             }
         }
         dyeConsole.enable = (v = true) => enabled = v

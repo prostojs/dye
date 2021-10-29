@@ -1,3 +1,4 @@
+import { debug } from 'console'
 import { dye, TDyeBgColor, TDyeColorAll, TDyeModifier } from './index'
 describe('dye', () => {
     it('must work plain colors', () => {
@@ -134,13 +135,35 @@ describe('dye', () => {
         error('error test')
         realconsole('real console test')
         func('func test')
-        expect(c.log).toBeCalledWith(style.open, 'log test', style.open, style.close)
-        expect(c.info).toBeCalledWith(style.open, 'info test', style.open, style.close)
-        expect(c.debug).toBeCalledWith(style.open, 'debug test', style.open, style.close)
-        expect(c.warn).toBeCalledWith(style.open, 'warn test', style.open, style.close)
-        expect(c.error).toBeCalledWith(style.open, 'error test', style.open, style.close)
-        expect(spy).toBeCalledWith(style.open, expect.stringMatching(/real\sconsole\stest/), expect.stringContaining(style.open), expect.stringContaining(style.close))
-        expect(callFunc).toBeCalledWith(style.open, 'func test', style.open, style.close)
+        const resetOpen = dye.reset + style.open
+        expect(c.log).toBeCalledWith(resetOpen + 'log test' + dye.reset)
+        expect(c.info).toBeCalledWith(resetOpen + 'info test' + dye.reset)
+        expect(c.debug).toBeCalledWith(resetOpen + 'debug test' + dye.reset)
+        expect(c.warn).toBeCalledWith(resetOpen + 'warn test' + dye.reset)
+        expect(c.error).toBeCalledWith(resetOpen + 'error test' + dye.reset)
+        expect(spy).toBeCalledWith(resetOpen + 'real console test' + dye.reset)
+        expect(callFunc).toBeCalledWith(resetOpen + 'func test' + dye.reset)
+    })
+
+    it('must handle multiple arguments on console', () => {
+        const c = {
+            log: jest.fn(),
+            info: jest.fn(),
+            debug: jest.fn(),
+            warn: jest.fn(),
+            error: jest.fn(),
+        }
+        const style = dye('cyan')
+        const log = style.attachConsole('log', c)
+        const info = style.attachConsole('info', c)
+        const debug = style.attachConsole('debug', c)
+        const resetOpen = dye.reset + style.open
+        log('arg1', 'arg2', 'arg3')
+        info('arg1', 1, true, 'arg3')
+        debug([1,2,3], [3,4,5])
+        expect(c.log).toBeCalledWith(resetOpen + 'arg1', resetOpen + 'arg2', resetOpen + 'arg3' + dye.reset)
+        expect(c.info).toBeCalledWith(resetOpen + 'arg1', resetOpen + '1', dye.reset, true, resetOpen + 'arg3' + dye.reset)
+        expect(c.debug).toBeCalledWith(dye.reset, [1,2,3], dye.reset, [3,4,5], dye.reset)
     })
 
     it('must enable/disable console', () => {
@@ -218,6 +241,6 @@ describe('dye', () => {
 
     it('must process 256 color BG', () => {
         const style = dye('bg*5,2,0')
-        expect(style('test')).toEqual(expect.stringMatching(/^\x1b\[48;5;208mtest\x1b\[49m$/))
+        expect(style('test')).toMatch('\u001b[48;5;208mtest\u001b[49m')
     })
 })

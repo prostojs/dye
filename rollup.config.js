@@ -79,7 +79,6 @@ function createConfig(format, output, plugins = []) {
   const isBrowserESMBuild = /esm-browser/.test(format)
   const isNodeBuild = format === 'cjs'
   const isGlobalBuild = /global/.test(format)
-  const isCompatBuild = !!packageOptions.compat
 
   output.exports = 'named'
   output.sourcemap = !!process.env.SOURCE_MAP
@@ -122,7 +121,7 @@ function createConfig(format, output, plugins = []) {
     }
   } else {
     // Node / esm-bundler builds.
-    // externalize all direct deps unless it's the compat build.
+    // externalize all direct deps
     external = [
       ...Object.keys(pkg.dependencies || {}),
       ...Object.keys(pkg.peerDependencies || {}),
@@ -163,7 +162,6 @@ function createConfig(format, output, plugins = []) {
           !packageOptions.enableNonBrowserBranches,
         isGlobalBuild,
         isNodeBuild,
-        isCompatBuild
       ),
       ...nodePlugins,
       ...plugins
@@ -187,7 +185,6 @@ function createReplacePlugin(
   isBrowserBuild,
   isGlobalBuild,
   isNodeBuild,
-  isCompatBuild
 ) {
   const replacements = {
     __COMMIT__: `"${process.env.COMMIT}"`,
@@ -197,35 +194,10 @@ function createReplacePlugin(
         `(process.env.NODE_ENV !== 'production')`
       : // hard coded dev/prod builds
         !isProduction,
-    // this is only used during internal tests
     __TEST__: false,
-    // If the build is expected to run directly in the browser (global / esm builds)
     __BROWSER__: isBrowserBuild,
     __GLOBAL__: isGlobalBuild,
-    __ESM_BUNDLER__: isBundlerESMBuild,
-    __ESM_BROWSER__: isBrowserESMBuild,
-    // is targeting Node (SSR)?
     __NODE_JS__: isNodeBuild,
-    // need SSR-specific branches?
-    __SSR__: isNodeBuild || isBundlerESMBuild,
-
-    // for compiler-sfc browser build inlined deps
-    ...(isBrowserESMBuild
-      ? {
-          'process.env': '({})',
-          'process.platform': '""',
-          'process.stdout': 'null'
-        }
-      : {}),
-
-    ...(isProduction && isBrowserBuild
-      ? {
-          'context.onError(': `/*#__PURE__*/ context.onError(`,
-          'emitError(': `/*#__PURE__*/ emitError(`,
-          'createCompilerError(': `/*#__PURE__*/ createCompilerError(`,
-          'createDOMCompilerError(': `/*#__PURE__*/ createDOMCompilerError(`
-        }
-      : {})
   }
   // allow inline overrides like
   //__RUNTIME_COMPILE__=true yarn build runtime-core
@@ -235,7 +207,6 @@ function createReplacePlugin(
     }
   })
   return replace({
-    // @ts-ignore
     values: replacements,
     preventAssignment: true
   })
