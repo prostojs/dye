@@ -1,3 +1,17 @@
+# [0.2.0](https://github.com/prostojs/dye/compare/v0.1.3...v0.2.0) (2021-10-29)
+
+
+### Bug Fixes
+
+* **console:** get rid of moveLeft ([1e61b5a](https://github.com/prostojs/dye/commit/1e61b5ad4f1d3e01ff055ed00eb9d0185907b968))
+
+
+### Features
+
+* Formatting ([9d68b51](https://github.com/prostojs/dye/commit/9d68b51106a194e71df1c01b4cb6ae4b5a79c483))
+
+
+
 ## [0.1.3](https://github.com/prostojs/dye/compare/v0.1.2...v0.1.3) (2021-10-27)
 
 
