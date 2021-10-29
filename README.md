@@ -242,3 +242,76 @@ print.done('End of example')
 Here's what we've got in the console:
 
 <img src="./docs/best-practice.png" style="max-width: 700px" />
+
+## Formatting
+
+Formatting is a very advanced feature which provides a very flexible text formatter.
+
+If you're using typescript you can type your console arguments:
+```ts
+import { dye } from '@prostojs/dye'
+// For this example want our Stylist to accept two
+// arguments with string and number types
+type Format = [string, number]
+
+// Pass the format to dye stylist factory
+const style = dye<Format>('bold')
+    // and define the format function which can do
+    // whatever you want; in this particular example
+    // we will just repeat the input <n> times
+    .format((s, n) => s.repeat(n))
+
+// Now TS knows which arguments it should expect (string, number)
+console.log(style('TEST_', 5))
+// console output:
+// TEST_TEST_TEST_TEST_TEST_
+```
+
+Take a look at more complex example, where we create a banner console output. Of course you can add more formatting to it, add wrapping if line is too long etc...
+```js
+const { dye } = require('@prostojs/dye')
+
+const bold = dye('bold')
+const bgBlue = dye('bg-blue')
+
+const bannerTop = bgBlue
+    .prefix('┌')
+    .suffix('┐')
+    .format(width => '─'.repeat(width - 2))
+const bannerLine = bgBlue
+    .prefix('│')
+    .suffix('│')
+    .format(width => ' '.repeat(width - 2))
+const bannerBottom = bgBlue
+    .prefix('└')
+    .suffix('┘')
+    .format(width => '─'.repeat(width - 2))
+const bannerSeparator = bgBlue
+    .prefix('├')
+    .suffix('┤')
+    .format(width => '─'.repeat(width - 2))
+const bannerCenterText = bgBlue
+    .prefix('│')
+    .suffix('│')
+    .format((text, w) => {
+        const tLength = dye.strip(text).length
+        const l = Math.round(w / 2 - tLength / 2) - 1
+        return ' '.repeat(l) + text + ' '.repeat(w - l - tLength - 2)
+    })
+
+const banner = dye()
+    .prefix((title, { width: w }) => bannerTop(w) + '\n' + bannerLine(w) + '\n')
+    .format((title, { width: w }) => bannerCenterText(bold(title), w) + '\n')
+    .suffix(
+        (title, { width: w, separator }) => 
+            bannerLine(w) + '\n' + (separator ? bannerSeparator(w) : bannerBottom(w)) + '\n'
+    )
+    .attachConsole()
+
+banner('Hello World!', { width: 60 })
+
+```
+
+Console output:
+
+<img src="./docs/banner.png" style="max-width: 700px" />

@@ -24,20 +24,21 @@ export type TBgRGB256 = `bg*${ number },${ number },${ number }`
 
 export type TRGBTypes = TRGB | TBgRGB | TRGB256 | TBgRGB256
 
-export interface TDyeStylist {
-    (text: string | number): string;
-    open: string;
-    close: string;
-    prefix: (v: string | (() => string)) => TDyeStylist
-    suffix: (v: string | (() => string)) => TDyeStylist
-    attachConsole: (...args: [] | [TConsoleMethodName] | [TConsoleMethodName, TConsoleInterface] | [((...args: TConsoleArgument) => void)]) => TDyeStylistConsole
+export interface TDyeStylist<Format extends unknown[] = TConsoleArgument> {
+    (...texts: Format): string
+    open: string
+    close: string
+    format: (cb: ((...texts: Format) => string)) => TDyeStylist<Format>
+    prefix: (v: string | ((...texts: Format) => string)) => TDyeStylist<Format>
+    suffix: (v: string | ((...texts: Format) => string)) => TDyeStylist<Format>
+    attachConsole: (...args: [] | [TConsoleMethodName] | [TConsoleMethodName, TConsoleInterface] | [((...args: Format) => void)]) => TDyeStylistConsole<Format>
 }
 
-export interface TDyeStylistConsole {
-    (...args: TConsoleArgument): void;
+export interface TDyeStylistConsole<Format extends unknown[] = TConsoleArgument> {
+    (...args: Format): void;
     enable: (v?: boolean) => void
     disable: () => void
-    asStylist: () => TDyeStylist
+    asStylist: () => TDyeStylist<Format>
 }
 
 export type TConsoleMethodName = 'info' | 'log' | 'warn' | 'error' | 'debug'
@@ -248,7 +249,7 @@ const modifiersClose: Record<TDyeModifier | 'color' | 'bg-color', string> = {
 }
 
 // implementation
-export function dye(...args: (TDyeColorAll | TDyeBgColor | TDyeModifier | TRGBTypes | TRGBHEXTypes)[]): TDyeStylist {
+export function dye<Format extends unknown[] = TConsoleArgument>(...args: (TDyeColorAll | TDyeBgColor | TDyeModifier | TRGBTypes | TRGBHEXTypes)[]): TDyeStylist<Format> {
     let open = ''
     let close = ''
     const closeObject: Record<string, string> = {}
@@ -314,7 +315,7 @@ export function dye(...args: (TDyeColorAll | TDyeBgColor | TDyeModifier | TRGBTy
     for (const closing of Object.values(closeObject)) {
         close += closing
     }
-    return getStylist(open, close, '', '')
+    return getStylist<Format>(open, close, '', '')
 }
 
 dye.strip = (coloredText: string): string => {
@@ -332,28 +333,38 @@ dye.inverse_off = modify(Modifiers.INVERSE_OFF)
 dye.reveal = modify(Modifiers.REVEAL)
 dye.crossed_off = modify(Modifiers.CROSSED_OFF)
 
-function getStylist(open: TDyeStylist['open'], close: TDyeStylist['close'], prefix: string | (() => string), suffix: string | (() => string)): TDyeStylist {
+function getStylist<Format extends unknown[] = TConsoleArgument>(
+    open: TDyeStylist['open'],
+    close: TDyeStylist['close'],
+    prefix: string | ((...texts: Format) => string),
+    suffix: string | ((...texts: Format) => string),
+    format?: ((...texts: Format) => string),
+): TDyeStylist<Format> {
     const resetOpen = dye.reset + open
 
-    const getPrefix = () => {
-        const v = typeof prefix === 'string' ? prefix : prefix()
+    const getPrefix = (...texts: Format) => {
+        const v = typeof prefix === 'string' ? prefix : prefix(...texts)
         return v ? open + v : ''
     }
-    const getSuffix = () => {
-        const v = typeof suffix === 'string' ? suffix : suffix()
+    const getSuffix = (...texts: Format) => {
+        const v = typeof suffix === 'string' ? suffix : suffix(...texts)
         return (v ? open + v : '') + close
     }
     
-    const stylist: TDyeStylist = (...texts: (string | number)[]) => {
-        const p = getPrefix() || ''
-        const s = getSuffix() || ''
-        return `${ p }${ open }${ texts.join(' ') }${ s }`
+    const formatDefault = (...texts: Format): string => texts.map(t => String(t)).join(' ')
+
+    const stylist: TDyeStylist<Format> = (...texts: Format) => {
+        const p = getPrefix(...texts) || ''
+        const s = getSuffix(...texts) || ''
+        const text = format ? format(...texts) : formatDefault(...texts)
+        return `${ p }${ open }${ text }${ s }`
     }
     stylist.open = open 
     stylist.close = close
-    stylist.prefix = (v: string | (() => string)) => getStylist(open, close, v, suffix)
-    stylist.suffix = (v: string | (() => string)) => getStylist(open, close, prefix, v)
-    stylist.attachConsole = (...args: [] | [TConsoleMethodName] | [TConsoleMethodName, TConsoleInterface] | [((...args: TConsoleArgument) => void)]) => {
+    stylist.format = (cb: ((...texts: Format) => string)) => getStylist<Format>(open, close, prefix, suffix, cb)
+    stylist.prefix = (v: string | (() => string)) => getStylist<Format>(open, close, v, suffix, format)
+    stylist.suffix = (v: string | (() => string)) => getStylist<Format>(open, close, prefix, v, format)
+    stylist.attachConsole = (...args: [] | [TConsoleMethodName] | [TConsoleMethodName, TConsoleInterface] | [((...args: Format) => void)]) => {
         const consoleInterface = args[1] || console
         let consoleMethod: (...args: TConsoleArgument) => void
         if (typeof args[0] === 'string' || typeof args[0] === 'undefined') {
@@ -362,27 +373,31 @@ function getStylist(open: TDyeStylist['open'], close: TDyeStylist['close'], pref
             consoleMethod = (args[0] as (...args: TConsoleArgument) => void)
         }
         let enabled = true
-        const dyeConsole: TDyeStylistConsole = (...consoleArgs: TConsoleArgument) => {
+        const dyeConsole: TDyeStylistConsole<Format> = (...consoleArgs: Format) => {
             if (enabled) {
-                let first = ''
-                if (typeof consoleArgs[0] === 'string' || typeof consoleArgs[0] === 'number') {
-                    first = resetOpen + String(consoleArgs.shift())
-                }
-                let last = ''
-                if (typeof consoleArgs[consoleArgs.length - 1] === 'string') {
-                    last = resetOpen + (consoleArgs.pop() as string)
-                }
-                const newArgs = consoleArgs.map(
-                    a => typeof a === 'string' ? resetOpen + a : typeof a === 'number' ? resetOpen + String(a) : [dye.reset, a]
-                ).flat()
-                const p = getPrefix()
-                const s = getSuffix()
+                const p = getPrefix(...consoleArgs)
+                const s = getSuffix(...consoleArgs)
                 const start = p ? dye.reset + p : ''
                 const end = s === close ? dye.reset : dye.reset + s
-                if (newArgs.length) {
-                    consoleMethod(...[start + first, ...newArgs, last + end].filter(e => typeof e !== 'string' || !!e))
-                } else {
-                    consoleMethod(start + first + last + end)
+                if (format) {
+                    consoleMethod(start + resetOpen + format(...consoleArgs) + end)
+                }  else {
+                    let first = ''
+                    if (typeof consoleArgs[0] === 'string' || typeof consoleArgs[0] === 'number') {
+                        first = resetOpen + String(consoleArgs.shift())
+                    }
+                    let last = ''
+                    if (typeof consoleArgs[consoleArgs.length - 1] === 'string') {
+                        last = resetOpen + (consoleArgs.pop() as string)
+                    }
+                    const newArgs = consoleArgs.map(
+                        a => typeof a === 'string' ? resetOpen + a : typeof a === 'number' ? resetOpen + String(a) : [dye.reset, a]
+                    ).flat()
+                    if (newArgs.length) {
+                        consoleMethod(...[start + first, ...newArgs, last + end].filter(e => typeof e !== 'string' || !!e))
+                    } else {
+                        consoleMethod(start + first + last + end)
+                    }
                 }
             }
         }

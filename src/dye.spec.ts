@@ -1,4 +1,3 @@
-import { debug } from 'console'
 import { dye, TDyeBgColor, TDyeColorAll, TDyeModifier } from './index'
 describe('dye', () => {
     it('must work plain colors', () => {
@@ -16,10 +15,7 @@ describe('dye', () => {
             const style = dye(test)
             const result = style('TEXT')
             expect(result).toBeDefined()
-            expect(/^\x1b\[\d\d\d?mTEXT/.test(result)).toBeTruthy()
-            expect(/TEXT\x1b\[[34]9m$/.test(result)).toBeTruthy()
-            expect(result.indexOf(style.open)).toEqual(0)
-            expect(result.indexOf(style.close)).toBeGreaterThan(6)
+            expect(result).toEqual(style.open + 'TEXT' + style.close)
         })
     })
 
@@ -52,10 +48,7 @@ describe('dye', () => {
             const style = dye(test)
             const result = style('TEXT')
             expect(result).toBeDefined()
-            expect(/^\x1b\[\d\d;5;\d\d\dmTEXT/.test(result)).toBeTruthy()
-            expect(/TEXT\x1b\[[34]9m$/.test(result)).toBeTruthy()
-            expect(result.indexOf(style.open)).toEqual(0)
-            expect(result.indexOf(style.close)).toBeGreaterThan(6)
+            expect(result).toEqual(style.open + 'TEXT' + style.close)
         })
     })
     it('must work with modifiers', () => {
@@ -72,10 +65,7 @@ describe('dye', () => {
             const style = dye(test)
             const result = style('TEXT')
             expect(result).toBeDefined()
-            expect(/^\x1b\[\dmTEXT/.test(result)).toBeTruthy()
-            expect(/TEXT\x1b\[[2]\dm$/.test(result)).toBeTruthy()
-            expect(result.indexOf(style.open)).toEqual(0)
-            expect(result.indexOf(style.close)).toBeGreaterThan(6)
+            expect(result).toEqual(style.open + 'TEXT' + style.close)
         })
     })
 
@@ -242,5 +232,30 @@ describe('dye', () => {
     it('must process 256 color BG', () => {
         const style = dye('bg*5,2,0')
         expect(style('test')).toMatch('\u001b[48;5;208mtest\u001b[49m')
+    })
+
+    it('must apply format', () => {
+        type Format = [string, number]
+        const style = dye<Format>('bg*5,2,0').format((s, n) => {
+            return s.repeat(n)
+        })
+        expect(style('test', 5)).toMatch('\u001b[48;5;208m' + 'test'.repeat(5) + '\u001b[49m')
+    })
+
+    it('must apply format in console', () => {
+        type Format = [string, number]
+        const style = dye<Format>('bg*5,2,0').format((s, n) => {
+            return s.repeat(n)
+        })
+        const c = {
+            log: jest.fn(),
+            info: jest.fn(),
+            debug: jest.fn(),
+            warn: jest.fn(),
+            error: jest.fn(),
+        }
+        const log = style.attachConsole('log', c)
+        log('log', 2)
+        expect(c.log).toHaveBeenCalledWith(dye.reset + style.open + 'loglog' + dye.reset)
     })
 })
