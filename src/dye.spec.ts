@@ -1,5 +1,18 @@
-import { dye, TDyeBgColor, TDyeColorAll, TDyeModifier } from './index'
+import { dye, TDyeBgColor, TDyeBgGrayscale, TDyeColorAll, TDyeGrayscale, TDyeModifier } from './index'
 describe('dye', () => {
+    it('must apply correct plain modifier', () => {
+        expect(dye('red').open.replace(/\x1b/g, '')).toEqual('[31m')
+        expect(dye('bg-red').open.replace(/\x1b/g, '')).toEqual('[41m')
+        expect(dye('bold').open.replace(/\x1b/g, '')).toEqual('[1m')
+    })
+    it('must collapse plain modifiers', () => {
+        expect(dye('bold','white', 'bg-red').open.replace(/\x1b/g, '')).toEqual('[1;37;41m')
+    })
+    it('must collapse plain and advanced modifiers', () => {
+        expect(dye('bold', 'bg-blue', '255,0,0').open.replace(/\x1b/g, '')).toEqual('[1;44m[38;2;255;0;0m')
+        expect(dye('255,0,0', 'bold', 'bg-blue').open.replace(/\x1b/g, '')).toEqual('[38;2;255;0;0m[1;44m')
+        expect(dye('bold', '255,0,0', 'bg-blue').open.replace(/\x1b/g, '')).toEqual('[1m[38;2;255;0;0m[44m')
+    })
     it('must work plain colors', () => {
         const tests: (TDyeColorAll | TDyeBgColor)[] = [
             'black', 'bg-black', 'black-bright', 'bg-black-bright',
@@ -20,7 +33,7 @@ describe('dye', () => {
     })
 
     it('must work with grayscale', () => {
-        const tests: (TDyeColorAll | TDyeBgColor)[] = [
+        const tests: (TDyeGrayscale | TDyeBgGrayscale)[] = [
             'gray01', 'bg-gray01',
             'gray02', 'bg-gray02',
             'gray03', 'bg-gray03',
@@ -151,7 +164,7 @@ describe('dye', () => {
         log('arg1', 'arg2', 'arg3')
         info('arg1', 1, true, 'arg3')
         debug([1,2,3], [3,4,5])
-        expect(c.log).toBeCalledWith(resetOpen + 'arg1', resetOpen + 'arg2', resetOpen + 'arg3' + dye.reset)
+        expect(c.log).toBeCalledWith(resetOpen + 'arg1', '\x1B[0m\x1B[36marg2', resetOpen + 'arg3' + dye.reset)
         expect(c.info).toBeCalledWith(resetOpen + 'arg1', resetOpen + '1', dye.reset, true, resetOpen + 'arg3' + dye.reset)
         expect(c.debug).toBeCalledWith(dye.reset, [1,2,3], dye.reset, [3,4,5], dye.reset)
     })
@@ -257,5 +270,32 @@ describe('dye', () => {
         const log = style.attachConsole('log', c)
         log('log', 2)
         expect(c.log).toHaveBeenCalledWith(dye.reset + style.open + 'loglog' + dye.reset)
+    })
+
+    it('must preserve colors', () => {
+        const style = dye('blue', 'bg-white', 'bold')
+        const result = style(`Test phrase ${ dye('red')('with') } ${ dye('bold')('more') } colors!`).replace(/\x1b/g, '')
+        expect(result).toEqual('[34;47;1mTest phrase [31mwith[39m[34m [1mmore[22m[1m colors![22;39;49m')
+    })
+    it('must preserve colors 2', () => {
+        const red = dye('red', 'bg-blue')
+        const green = dye('green')
+        const bold = dye('bold')
+        const style = dye('blue', 'bg-black', 'bold')
+        const result = style(`Test phrase ${ red('with ' + green('123456') + bold(' more')) } colors!`).replace(/\x1b/g, '')
+        expect(result).toEqual('[34;40;1mTest phrase [31;44mwith [32m123456[39m[34m[31m[1m more[22m[1m[39;49m[40m[34m colors![22;39;49m')
+    })
+    it('must preserve colors in console', () => {
+        const style = dye('blue', 'bg-white', 'bold')
+        const c = {
+            log: jest.fn(),
+            info: jest.fn(),
+            debug: jest.fn(),
+            warn: jest.fn(),
+            error: jest.fn(),
+        }
+        const log = style.attachConsole('log', c)
+        log(`Test phrase ${ dye('red')('with') } ${ dye('bold')('more') } colors!`)
+        expect(c.log).toHaveBeenCalledWith(dye.reset + '\x1b[34;47;1mTest phrase \x1b[31mwith\x1b[39m\x1b[34m \x1b[1mmore\x1b[22m\x1b[1m colors!' + dye.reset)
     })
 })
