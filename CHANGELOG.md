@@ -1,3 +1,12 @@
+# [0.3.0](https://github.com/prostojs/dye/compare/v0.2.0...v0.3.0) (2021-11-01)
+
+
+### Features
+
+* preserve styles after nested styles ([9aab6fa](https://github.com/prostojs/dye/commit/9aab6fa5bda2980e63e9c6c5606c741592eb848a))
+
+
+
 # [0.2.0](https://github.com/prostojs/dye/compare/v0.1.3...v0.2.0) (2021-10-29)
 
 
