@@ -1,10 +1,13 @@
 import minimist from 'minimist'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { execa, execaSync } from 'execa'
-import { prompt } from 'enquirer'
 import semver from 'semver'
-import { dye } from '../'
+import { dye } from '../dist/index.mjs'
+import { createRequire } from 'module'
+
+const require = createRequire(import.meta.url)
+const { prompt } = require('enquirer')
+const execa = require('execa')
 
 // __dirname replacement in ES modules
 const __filename = fileURLToPath(import.meta.url)
@@ -28,9 +31,9 @@ const error = dye('red-bright').attachConsole('error')
 const good = dye('green', 'bold').prefix('\n✓ ').attachConsole()
 const info = dye('green', 'dim').attachConsole('info')
 
-const branch = execaSync('git', ['branch', '--show-current']).stdout
-const commitMessage = execaSync('git', ['log', '-1', '--pretty=%B']).stdout
-const gitStatus = execaSync('git', ['status']).stdout
+const branch = execa.sync('git', ['branch', '--show-current']).stdout
+const commitMessage = execa.sync('git', ['log', '-1', '--pretty=%B']).stdout
+const gitStatus = execa.sync('git', ['status']).stdout
 
 if (!gitStatus.includes('nothing to commit, working tree clean')) {
   error('Please commit all changes first.')
@@ -120,16 +123,16 @@ async function main() {
     : []
 
   step(`Creating a new version ${targetVersion} ...`)
-  execaSync('npm', ['version', npmAction, ...preAction, '-m', commitMessage])
+  execa.sync('npm', ['version', npmAction, ...preAction, '-m', commitMessage])
 
   step('Pushing changes...')
-  execaSync('git', ['push'])
+  execa.sync('git', ['push'])
 
   step('Pushing tags...')
-  execaSync('git', ['push', '--tags'])
+  execa.sync('git', ['push', '--tags'])
 
   step('Publishing...')
-  execaSync('npm', ['publish', '--access', 'public'])
+  execa.sync('npm', ['publish', '--access', 'public'])
 
   good('All done!')
 }
