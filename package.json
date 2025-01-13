@@ -1,6 +1,6 @@
 {
   "name": "@prostojs/dye",
-  "version": "0.4.5",
+  "version": "0.4.6",
   "description": "Easy and light console styling tool",
   "packageManager": "pnpm@9.12.3",
   "type": "module",
