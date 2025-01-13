@@ -25,6 +25,7 @@
     }
   },
   "files": [
+    "scripts",
     "dist",
     "dye.d.ts",
     "tsconfig.dye.json"
