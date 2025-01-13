@@ -6,6 +6,7 @@ const { gzipSync } = require('zlib')
 const { compress } = require('brotli')
 
 const args = require('minimist')(process.argv.slice(2))
+
 const formats = args.formats || args.f
 const devOnly = args.devOnly || args.d
 const sourceMap = args.sourcemap || args.s
@@ -22,7 +23,6 @@ async function run() {
   checkSize()
 }
 
-
 async function build() {
   const pkgDir = path.resolve(`./`)
   const pkg = require(`${pkgDir}/package.json`)
@@ -37,9 +37,7 @@ async function build() {
     await fs.remove(`${pkgDir}/dist`)
   }
 
-  const env =
-    (pkg.buildOptions && pkg.buildOptions.env) ||
-    (devOnly ? 'development' : 'production')
+  const env = (pkg.buildOptions && pkg.buildOptions.env) || (devOnly ? 'development' : 'production')
   await execa(
     'rollup',
     [
@@ -51,29 +49,26 @@ async function build() {
         formats ? `FORMATS:${formats}` : ``,
         buildTypes ? `TYPES:true` : ``,
         prodOnly ? `PROD_ONLY:true` : ``,
-        sourceMap ? `SOURCE_MAP:true` : ``
+        sourceMap ? `SOURCE_MAP:true` : ``,
       ]
         .filter(Boolean)
-        .join(',')
+        .join(','),
     ],
     { stdio: 'inherit' }
   )
 
   if (buildTypes && pkg.types) {
     console.log()
-    console.log(
-      chalk.bold(chalk.yellow(`Rolling up type definitions for ${ target }...`))
-    )
+    console.log(chalk.bold(chalk.yellow(`Rolling up type definitions for ${target}...`)))
 
     // build types
     const { Extractor, ExtractorConfig } = require('@microsoft/api-extractor')
 
     const extractorConfigPath = path.resolve(pkgDir, `api-extractor.json`)
-    const extractorConfig =
-      ExtractorConfig.loadFileAndPrepare(extractorConfigPath)
+    const extractorConfig = ExtractorConfig.loadFileAndPrepare(extractorConfigPath)
     const extractorResult = Extractor.invoke(extractorConfig, {
       localBuild: true,
-      showVerboseMessages: true
+      showVerboseMessages: true,
     })
 
     if (extractorResult.succeeded) {
@@ -81,18 +76,14 @@ async function build() {
       const typesDir = path.resolve(pkgDir, 'types')
       if (await fs.exists(typesDir)) {
         const dtsPath = path.resolve(pkgDir, pkg.types)
-        const existing = await fs.readFile(dtsPath, 'utf-8')
+        const existing = await fs.readFile(dtsPath, 'utf8')
         const typeFiles = await fs.readdir(typesDir)
         const toAdd = await Promise.all(
-          typeFiles.map(file => {
-            return fs.readFile(path.resolve(typesDir, file), 'utf-8')
-          })
+          typeFiles.map(file => fs.readFile(path.resolve(typesDir, file), 'utf8'))
         )
-        await fs.writeFile(dtsPath, existing + '\n' + toAdd.join('\n'))
+        await fs.writeFile(dtsPath, `${existing}\n${toAdd.join('\n')}`)
       }
-      console.log(
-        chalk.bold(chalk.green(`API Extractor completed successfully.`))
-      )
+      console.log(chalk.bold(chalk.green(`API Extractor completed successfully.`)))
     } else {
       console.error(
         `API Extractor completed with ${extractorResult.errorCount} errors` +
@@ -118,11 +109,11 @@ function checkFileSize(filePath) {
     return
   }
   const file = fs.readFileSync(filePath)
-  const minSize = (file.length / 1024).toFixed(2) + 'kb'
+  const minSize = `${(file.length / 1024).toFixed(2)}kb`
   const gzipped = gzipSync(file)
-  const gzippedSize = (gzipped.length / 1024).toFixed(2) + 'kb'
+  const gzippedSize = `${(gzipped.length / 1024).toFixed(2)}kb`
   const compressed = compress(file)
-  const compressedSize = (compressed.length / 1024).toFixed(2) + 'kb'
+  const compressedSize = `${(compressed.length / 1024).toFixed(2)}kb`
   console.log(
     `${chalk.gray(
       chalk.bold(path.basename(filePath))

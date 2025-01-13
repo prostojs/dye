@@ -1,0 +1,8 @@
+# >>> domelint-start
+# this block was auto-generated with do-me-lint
+explorations
+package-lock.json
+dist
+temp
+coverage
+# <<< domelint-end
