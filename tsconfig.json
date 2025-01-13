@@ -9,7 +9,7 @@
     "resolveJsonModule": true,
     "rootDir": ".",
     "allowJs": false,
-    "outDir": "build",
+    "outDir": "dist",
     "downlevelIteration": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
@@ -23,6 +23,6 @@
     "experimentalDecorators": true,
     "types": ["jest", "node"]
   },
-  "include": ["src/**/*", "**/*.spec.ts"],
+  "include": ["src/**/*.ts", "vitest.config.ts"],
   "exclude": ["node_modules", "explorations"]
 }

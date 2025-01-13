@@ -5,5 +5,4 @@ package-lock.json
 dist
 temp
 coverage
-scripts
 # <<< domelint-end
