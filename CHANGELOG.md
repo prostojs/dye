@@ -1,3 +1,12 @@
+## [0.4.6](https://github.com/prostojs/dye/compare/v0.4.5...v0.4.6) (2025-01-13)
+
+
+### Bug Fixes
+
+* **plugins:** fix oxlintrc update ([52406a8](https://github.com/prostojs/dye/commit/52406a8ae309ed48f667e391df9acfc4beb20299))
+
+
+
 ## [0.4.5](https://github.com/prostojs/dye/compare/v0.4.4...v0.4.5) (2025-01-13)
 
 
