@@ -1,8 +1,11 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import fs from 'fs'
 import path from 'path'
 
+import { createDyeReplacements } from './common'
+
 // Helper to resolve paths
-const resolvePath = relativePath => path.resolve(process.cwd(), relativePath)
+const resolvePath = (relativePath: string) => path.resolve(process.cwd(), relativePath)
 
 async function updateTsconfig() {
   try {
@@ -19,7 +22,7 @@ async function updateTsconfig() {
 
     // Read the existing tsconfig.json
     const tsconfigContent = await fs.promises.readFile(tsconfigPath, 'utf8')
-    const tsconfig = JSON.parse(tsconfigContent)
+    const tsconfig = JSON.parse(tsconfigContent) as Record<string, unknown>
 
     // Add or update the extends field
     const extendsPath = './node_modules/@prostojs/dye/tsconfig.dye.json'
@@ -47,35 +50,15 @@ async function updateOxlintConfig() {
     }
 
     const oxlintrcContent = await fs.promises.readFile(oxlintrcPath, 'utf8')
-    const oxlintrc = JSON.parse(oxlintrcContent)
+    const oxlintrc = JSON.parse(oxlintrcContent) as { globals?: Record<string, 'readonly'> }
 
     // Ensure globals field exists
     oxlintrc.globals = oxlintrc.globals || {}
 
-    // Add required globals
-    const requiredGlobals = {
-      Buffer: 'readonly',
-      process: 'readonly',
-    }
+    Object.keys(createDyeReplacements()).forEach(key => (oxlintrc.globals![key] = 'readonly'))
 
-    let updated = false
-    for (const [key, value] of Object.entries(requiredGlobals)) {
-      if (oxlintrc.globals[key] !== value) {
-        oxlintrc.globals[key] = value
-        updated = true
-      }
-    }
-
-    if (updated) {
-      await fs.promises.writeFile(oxlintrcPath, JSON.stringify(oxlintrc, null, 2), 'utf8')
-      console.log(
-        `[@prostojs/dye] Updated .oxlintrc.json with required globals: ${Object.keys(
-          requiredGlobals
-        ).join(', ')}`
-      )
-    } else {
-      console.log('[@prostojs/dye] .oxlintrc.json already contains the required globals.')
-    }
+    await fs.promises.writeFile(oxlintrcPath, JSON.stringify(oxlintrc, null, 2), 'utf8')
+    console.log(`[@prostojs/dye] Updated .oxlintrc.json with DYE globals`)
   } catch (error) {
     console.error('[@prostojs/dye] Failed to update .oxlintrc.json:', error)
   }

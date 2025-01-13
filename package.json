@@ -43,7 +43,7 @@
     "release:minor": "pnpm test && pnpm lint && pnpm build && npm version minor && git push --follow-tags && npm publish --access public",
     "release:major": "pnpm test && pnpm lint && pnpm build && npm version major && git push --follow-tags && npm publish --access public",
     "prepare": "husky",
-    "postinstall": "node scripts/update-configs.js"
+    "postinstall": "node dist/plugins/update-configs.mjs"
   },
   "repository": {
     "type": "git",

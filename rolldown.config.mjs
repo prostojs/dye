@@ -31,7 +31,7 @@ export default defineConfig([
     },
   },
   {
-    input: ['src/plugins/rolldown.ts', 'src/plugins/vite.ts'],
+    input: ['src/plugins/rolldown.ts', 'src/plugins/vite.ts', 'src/plugins/update-configs.ts'],
     output: {
       format: 'es',
       dir: 'dist/plugins',
