@@ -9,10 +9,9 @@ import { createDyeReplacements } from './common'
 export default function rolldownPlugin(): Plugin {
   return {
     name: '@prostojs/dye',
-    options() {
-      return {
-        define: createDyeReplacements(),
-      }
+    options(o) {
+      o.define = { ...createDyeReplacements(true), ...o.define }
+      return o
     },
   }
 }
