@@ -25,7 +25,9 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "dye.d.ts",
+    "tsconfig.dye.json"
   ],
   "scripts": {
     "build": "rolldown -c rolldown.config.mjs",
@@ -39,7 +41,8 @@
     "release:patch": "pnpm test && pnpm lint && pnpm build && npm version patch && git push --follow-tags && npm publish --access public",
     "release:minor": "pnpm test && pnpm lint && pnpm build && npm version minor && git push --follow-tags && npm publish --access public",
     "release:major": "pnpm test && pnpm lint && pnpm build && npm version major && git push --follow-tags && npm publish --access public",
-    "prepare": "husky"
+    "prepare": "husky",
+    "postinstall": "node scripts/update-tsconfig.js"
   },
   "repository": {
     "type": "git",
