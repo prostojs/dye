@@ -1,3 +1,12 @@
+## [0.4.4](https://github.com/prostojs/dye/compare/v0.4.3...v0.4.4) (2025-01-13)
+
+
+### Bug Fixes
+
+* fix script ([bf8d5ad](https://github.com/prostojs/dye/commit/bf8d5ad639cd64b9cc8acb802e47ec0aa57d955c))
+
+
+
 ## [0.4.3](https://github.com/prostojs/dye/compare/v0.4.2...v0.4.3) (2025-01-13)
 
 
