@@ -1,3 +1,12 @@
+## [0.4.2](https://github.com/prostojs/dye/compare/v0.4.1...v0.4.2) (2025-01-13)
+
+
+### Bug Fixes
+
+* **rollup:** fix rollup plugin ([504a4ea](https://github.com/prostojs/dye/commit/504a4ea06099846f1e442fde4d9e0c7102e6991c))
+
+
+
 ## [0.4.1](https://github.com/prostojs/dye/compare/v0.4.0...v0.4.1) (2025-01-13)
 
 
