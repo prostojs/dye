@@ -38,7 +38,8 @@
     "release": "pnpm test && pnpm lint && pnpm build && npm version patch && git push --follow-tags && npm publish --access public",
     "release:patch": "pnpm test && pnpm lint && pnpm build && npm version patch && git push --follow-tags && npm publish --access public",
     "release:minor": "pnpm test && pnpm lint && pnpm build && npm version minor && git push --follow-tags && npm publish --access public",
-    "release:major": "pnpm test && pnpm lint && pnpm build && npm version major && git push --follow-tags && npm publish --access public"
+    "release:major": "pnpm test && pnpm lint && pnpm build && npm version major && git push --follow-tags && npm publish --access public",
+    "prepare": "husky"
   },
   "repository": {
     "type": "git",
