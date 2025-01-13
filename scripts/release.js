@@ -1,125 +1,135 @@
-const args = require('minimist')(process.argv.slice(2))
-const path = require('path')
-const execa = require('execa')
-const { prompt } = require('enquirer')
-const version = require('../package.json').version
-const semver = require('semver')
-const chalk = require('chalk')
+import minimist from 'minimist'
+import path from 'path'
+import { fileURLToPath } from 'url'
+import { execa, execaSync } from 'execa'
+import { prompt } from 'enquirer'
+import semver from 'semver'
+import { dye } from '../'
 
-const run = (bin, args, opts = {}) => execa(bin, args, { stdio: 'inherit', ...opts })
-const bin = name => path.resolve(__dirname, `../node_modules/.bin/${name}`)
-const step = msg => console.log(chalk.cyan(msg))
+// __dirname replacement in ES modules
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
-const branch = execa.sync('git', ['branch', '--show-current']).stdout
-const inc = i => {
-  if (['prerelease', 'premajor'].includes(i.split(' ')[0])) {
-    const [action, pre] = i.split(' ')
-    return semver.inc(version, action, pre)
-  } else {
-    return semver.inc(version, i)
-  }
-}
+// Import package.json data (Node 16+ with `"type": "module"` in package.json)
+import pkg from '../package.json' assert { type: 'json' }
+const version = pkg.version
 
+const args = minimist(process.argv.slice(2))
 const isDryRun = args.dry
 const skipTests = args.skipTests
 const skipBuild = args.skipBuild
 
-const commitMessage = execa.sync('git', ['log', '-1', '--pretty=%B']).stdout
+const run = (bin, binArgs, opts = {}) => execa(bin, binArgs, { stdio: 'inherit', ...opts })
 
-const gitStatus = execa.sync('git', ['status']).stdout
+const bin = name => path.resolve(__dirname, '../node_modules/.bin/', name)
+
+const step = dye('cyan').prefix('\n').attachConsole()
+const error = dye('red-bright').attachConsole('error')
+const good = dye('green', 'bold').prefix('\n✓ ').attachConsole()
+const info = dye('green', 'dim').attachConsole('info')
+
+const branch = execaSync('git', ['branch', '--show-current']).stdout
+const commitMessage = execaSync('git', ['log', '-1', '--pretty=%B']).stdout
+const gitStatus = execaSync('git', ['status']).stdout
+
 if (!gitStatus.includes('nothing to commit, working tree clean')) {
-  console.error(chalk.redBright('Please commit all the changes first.'))
+  error('Please commit all changes first.')
   process.exit(1)
 }
 
-main()
+main().catch(err => {
+  error(err)
+  process.exit(1)
+})
 
 async function main() {
   let targetVersion = version
-  if (branch === 'main') {
-    // for main proposing typeof version increase
-    const versionIncrements = [
-      'patch',
-      'minor',
-      'prerelease alpha',
-      'prerelease beta',
-      'preminor alpha',
-      'preminor beta',
-      'premajor alpha',
-      'premajor beta',
-      'major',
-    ]
 
-    const { release } = await prompt({
-      type: 'select',
-      name: 'release',
-      message: 'Select release type',
-      choices: versionIncrements.map(i => `${i} (${inc(i)})`),
-    })
-
-    targetVersion = release.match(/\((.*)\)/u)[1]
-
-    if (!semver.valid(targetVersion)) {
-      throw new Error(`invalid target version: ${targetVersion}`)
-    }
-
-    const { yes } = await prompt({
-      type: 'confirm',
-      name: 'yes',
-      message: `Releasing v${targetVersion}. Confirm?`,
-    })
-
-    if (!yes) {
-      return
-    }
-
-    // run tests before release
-    step('\nRunning tests...')
-    if (!skipTests && !isDryRun) {
-      await run(bin('jest'), ['--clearCache'])
-      await run('npm', ['test', '--', '--bail'])
-    } else {
-      console.log(`(skipped)`)
-    }
-
-    step('\nRunning tests...')
-    if (!skipTests && !isDryRun) {
-      await run('npm', ['run', 'lint'])
-    } else {
-      console.log(`(skipped)`)
-    }
-
-    // build all packages with types
-    step('\nBuilding package...')
-    if (!skipBuild && !isDryRun) {
-      await run('npm', ['run', 'build', '--', '--release'])
-    } else {
-      console.log(`(skipped)`)
-    }
-
-    const npmAction = release.split(' ')[0]
-    const pre = release.split(' ')[1]
-    const preAction = ['prerelease', 'preminor', 'premajor'].includes(npmAction)
-      ? ['--preid', pre]
-      : []
-
-    step(`\nCreating a new version ${targetVersion} ...`)
-    execa.sync('npm', ['version', npmAction, ...preAction, '-m', commitMessage])
-
-    // included in "version" script
-    // updateChangeLog(targetVersion)
-  } else {
-    console.error('Branch "main" expected')
+  if (branch !== 'main') {
+    error('Branch "main" expected')
+    return
   }
 
-  step('\nPushing changes ...')
-  execa.sync('git', ['push'])
+  // For main, propose version increments
+  const versionIncrements = [
+    'patch',
+    'minor',
+    'prerelease alpha',
+    'prerelease beta',
+    'preminor alpha',
+    'preminor beta',
+    'premajor alpha',
+    'premajor beta',
+    'major',
+  ]
 
-  step('\nPushing tags ...')
-  execa.sync('git', ['push', '--tags'])
+  const inc = input => {
+    const [action, pre] = input.split(' ')
+    if (['prerelease', 'premajor'].includes(action)) {
+      return semver.inc(version, action, pre)
+    }
+    return semver.inc(version, input)
+  }
 
-  step('\nPublishing ...')
-  execa.sync('npm', ['publish', '--access', 'public'])
+  const { release } = await prompt({
+    type: 'select',
+    name: 'release',
+    message: 'Select release type',
+    choices: versionIncrements.map(i => `${i} (${inc(i)})`),
+  })
+  targetVersion = release.match(/\((.*)\)/)[1]
 
-  console.log(chalk.green('✓ All done!'))
+  if (!semver.valid(targetVersion)) {
+    throw new Error(`Invalid target version: ${targetVersion}`)
+  }
+
+  const { yes } = await prompt({
+    type: 'confirm',
+    name: 'yes',
+    message: `Releasing v${targetVersion}. Confirm?`,
+  })
+  if (!yes) {
+    return
+  }
+
+  step('Running tests...')
+  if (!skipTests && !isDryRun) {
+    await run(bin('jest'), ['--clearCache'])
+    await run('npm', ['test', '--', '--bail'])
+  } else {
+    info('(skipped)')
+  }
+
+  step('Running lint...')
+  if (!skipTests && !isDryRun) {
+    await run('npm', ['run', 'lint'])
+  } else {
+    info('(skipped)')
+  }
+
+  step('Building package...')
+  if (!skipBuild && !isDryRun) {
+    await run('npm', ['run', 'build', '--', '--release'])
+  } else {
+    info('(skipped)')
+  }
+
+  const [npmAction, pre] = release.split(' ')
+  const preAction = ['prerelease', 'preminor', 'premajor'].includes(npmAction)
+    ? ['--preid', pre]
+    : []
+
+  step(`Creating a new version ${targetVersion} ...`)
+  execaSync('npm', ['version', npmAction, ...preAction, '-m', commitMessage])
+
+  step('Pushing changes...')
+  execaSync('git', ['push'])
+
+  step('Pushing tags...')
+  execaSync('git', ['push', '--tags'])
+
+  step('Publishing...')
+  execaSync('npm', ['publish', '--access', 'public'])
+
+  good('All done!')
 }
