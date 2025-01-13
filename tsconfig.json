@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
     "target": "es2019",
-    "lib": ["es2019"],
+    "lib": [
+      "es2019"
+    ],
     "module": "ESNext",
     "declaration": true,
     "sourceMap": true,
@@ -21,8 +23,16 @@
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "types": ["node"]
+    "types": [
+      "node"
+    ]
   },
-  "include": ["src/**/*.ts", "vitest.config.ts"],
-  "exclude": ["node_modules", "explorations"]
+  "include": [
+    "src/**/*.ts",
+    "vitest.config.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "explorations"
+  ]
 }
