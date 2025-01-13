@@ -1,3 +1,12 @@
+# [0.4.0](https://github.com/prostojs/dye/compare/v0.3.0...v0.4.0) (2025-01-13)
+
+
+### Features
+
+* add vite and rolldown plugins ([5ae0db9](https://github.com/prostojs/dye/commit/5ae0db92ccc26617fd77240faf7471f2772b0181))
+
+
+
 # [0.3.0](https://github.com/prostojs/dye/compare/v0.2.0...v0.3.0) (2021-11-01)
 
 ### Features
