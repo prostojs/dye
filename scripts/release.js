@@ -97,22 +97,21 @@ async function main() {
 
   step('Running tests...')
   if (!skipTests && !isDryRun) {
-    await run(bin('jest'), ['--clearCache'])
-    await run('npm', ['test', '--', '--bail'])
+    await run('pnpm', ['test'])
   } else {
     info('(skipped)')
   }
 
   step('Running lint...')
   if (!skipTests && !isDryRun) {
-    await run('npm', ['run', 'lint'])
+    await run('pnpm', ['run', 'lint'])
   } else {
     info('(skipped)')
   }
 
   step('Building package...')
   if (!skipBuild && !isDryRun) {
-    await run('npm', ['run', 'build', '--', '--release'])
+    await run('pnpm', ['run', 'build'])
   } else {
     info('(skipped)')
   }
