@@ -1,3 +1,12 @@
+## [0.4.5](https://github.com/prostojs/dye/compare/v0.4.4...v0.4.5) (2025-01-13)
+
+
+### Features
+
+* **plugins:** add .oxlintrc.json support ([6aef488](https://github.com/prostojs/dye/commit/6aef488182fec6c6658c08b9873b6962c56ef8e6))
+
+
+
 ## [0.4.4](https://github.com/prostojs/dye/compare/v0.4.3...v0.4.4) (2025-01-13)
 
 
