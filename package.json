@@ -27,8 +27,7 @@
   "files": [
     "scripts",
     "dist",
-    "dye.d.ts",
-    "tsconfig.dye.json"
+    "global.d.ts"
   ],
   "scripts": {
     "build": "rolldown -c rolldown.config.mjs",

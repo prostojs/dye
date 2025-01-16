@@ -4,8 +4,9 @@ import path from 'path'
 
 import { createDyeReplacements } from './common'
 
+const rootDir = process.env.INIT_CWD || process.cwd()
 // Helper to resolve paths
-const resolvePath = (relativePath: string) => path.resolve(process.cwd(), relativePath)
+const resolvePath = (relativePath: string) => path.resolve(rootDir, relativePath)
 
 async function updateTsconfig() {
   try {
@@ -16,25 +17,32 @@ async function updateTsconfig() {
 
     // Check if tsconfig.json exists
     if (!fs.existsSync(tsconfigPath)) {
-      console.log('[@prostojs/dye] No tsconfig.json found. Skipping update.')
+      console.log('[@prostojs/dye] No tsconfig.json found.')
+      await fs.promises.writeFile(
+        tsconfigPath,
+        JSON.stringify(
+          {
+            compilerOptions: {
+              types: ['@prostojs/dye/global'],
+            },
+          },
+          null,
+          2
+        ),
+        'utf8'
+      )
       return
     }
 
     // Read the existing tsconfig.json
     const tsconfigContent = await fs.promises.readFile(tsconfigPath, 'utf8')
-    const tsconfig = JSON.parse(tsconfigContent) as Record<string, unknown>
+    const tsconfig = JSON.parse(tsconfigContent) as { compilerOptions?: { types?: string[] } }
 
-    // Add or update the extends field
-    const extendsPath = './node_modules/@prostojs/dye/tsconfig.dye.json'
-    if (tsconfig.extends === extendsPath) {
-      console.log('[@prostojs/dye] tsconfig.json already extends the required configuration.')
-    } else {
-      tsconfig.extends = extendsPath
+    tsconfig.compilerOptions = tsconfig.compilerOptions || {}
+    tsconfig.compilerOptions.types = tsconfig.compilerOptions.types || []
+    tsconfig.compilerOptions.types.push('@prostojs/dye/global')
 
-      // Write the updated tsconfig.json back to disk
-      await fs.promises.writeFile(tsconfigPath, JSON.stringify(tsconfig, null, 2), 'utf8')
-      console.log(`[@prostojs/dye] Updated tsconfig.json to extend ${extendsPath}`)
-    }
+    await fs.promises.writeFile(tsconfigPath, JSON.stringify(tsconfig, null, 2), 'utf8')
   } catch (error) {
     console.error('[@prostojs/dye] Failed to update tsconfig.json:', error)
   }
@@ -65,7 +73,4 @@ async function updateOxlintConfig() {
 }
 
 // Run both functions
-;(async () => {
-  await updateTsconfig()
-  await updateOxlintConfig()
-})()
+;(async () => Promise.all([updateTsconfig(), updateOxlintConfig()]))()

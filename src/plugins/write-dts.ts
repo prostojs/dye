@@ -15,5 +15,5 @@ export function writeDts(keys: string[]) {
   ]
 
   const dtsContents = lines.join('\n')
-  writeFileSync('./dye.d.ts', dtsContents)
+  writeFileSync('./global.d.ts', dtsContents)
 }
