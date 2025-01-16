@@ -1,3 +1,12 @@
+## [0.4.8](https://github.com/prostojs/dye/compare/v0.4.7...v0.4.8) (2025-01-16)
+
+
+### Bug Fixes
+
+* fix global.d.ts ([58522b4](https://github.com/prostojs/dye/commit/58522b4d70f2a36026b8a2418ad87ae773b8f2ef))
+
+
+
 ## [0.4.7](https://github.com/prostojs/dye/compare/v0.4.6...v0.4.7) (2025-01-16)
 
 
