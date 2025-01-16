@@ -12,6 +12,8 @@ export function writeDts(keys: string[]) {
     '',
     ...keys.map(key => `declare var ${key}: string`),
     '',
+    'export {}',
+    '',
   ]
 
   const dtsContents = lines.join('\n')

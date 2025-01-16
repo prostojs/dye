@@ -96,3 +96,4 @@ declare global {
   declare var __DYE_GRAY22__: string
   declare var __DYE_BG_GRAY22__: string
 }
+export {}
