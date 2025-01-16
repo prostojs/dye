@@ -1,3 +1,12 @@
+## [0.4.7](https://github.com/prostojs/dye/compare/v0.4.6...v0.4.7) (2025-01-16)
+
+
+### Bug Fixes
+
+* fix global d.ts auto-config ([dabec54](https://github.com/prostojs/dye/commit/dabec54dffa0e6e91f01d61fe21f117cc82d487d))
+
+
+
 ## [0.4.6](https://github.com/prostojs/dye/compare/v0.4.5...v0.4.6) (2025-01-13)
 
 
