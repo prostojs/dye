@@ -31,7 +31,13 @@ export default defineConfig([
     },
   },
   {
-    input: ['src/plugins/rolldown.ts', 'src/plugins/vite.ts', 'src/plugins/update-configs.ts'],
+    input: [
+      'src/plugins/rolldown.ts',
+      'src/plugins/vite.ts',
+      'src/plugins/update-configs.ts',
+      'src/plugins/common.ts',
+    ],
+    external: ['@prostojs/dye'],
     output: {
       format: 'es',
       dir: 'dist/plugins',

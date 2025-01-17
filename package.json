@@ -22,6 +22,10 @@
     "./rolldown": {
       "types": "./dist/plugins/rolldown.d.mts",
       "import": "./dist/plugins/rolldown.mjs"
+    },
+    "./common": {
+      "types": "./dist/plugins/common.d.mts",
+      "import": "./dist/plugins/common.mjs"
     }
   },
   "files": [

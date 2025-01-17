@@ -10,18 +10,18 @@ export function createDyeReplacements(): Record<string, string> {
     __DYE_BG_OFF__: JSON.stringify(bg.close),
   } as Record<string, string>
   DyeModifier.forEach(v => {
-    dyeReplacements[`__DYE_${v.toUpperCase()}__`] = `'${dye(v).open}'`
-    dyeReplacements[`__DYE_${v.toUpperCase()}_OFF__`] = `'${dye(v).close}'`
+    dyeReplacements[`__DYE_${v.toUpperCase()}__`] = `"${dye(v).open}"`
+    dyeReplacements[`__DYE_${v.toUpperCase()}_OFF__`] = `"${dye(v).close}"`
   })
   DyeColors.forEach(v => {
-    dyeReplacements[`__DYE_${v.toUpperCase()}__`] = `'${dye(v).open}'`
-    dyeReplacements[`__DYE_BG_${v.toUpperCase()}__`] = `'${dye(`bg-${v}`).open}'`
-    dyeReplacements[`__DYE_${v.toUpperCase()}_BRIGHT__`] = `'${dye(`${v}-bright`).open}'`
-    dyeReplacements[`__DYE_BG_${v.toUpperCase()}_BRIGHT__`] = `'${dye(`bg-${v}-bright`).open}'`
+    dyeReplacements[`__DYE_${v.toUpperCase()}__`] = `"${dye(v).open}"`
+    dyeReplacements[`__DYE_BG_${v.toUpperCase()}__`] = `"${dye(`bg-${v}`).open}"`
+    dyeReplacements[`__DYE_${v.toUpperCase()}_BRIGHT__`] = `"${dye(`${v}-bright`).open}"`
+    dyeReplacements[`__DYE_BG_${v.toUpperCase()}_BRIGHT__`] = `"${dye(`bg-${v}-bright`).open}"`
   })
   DyeGrayscale.forEach(v => {
-    dyeReplacements[`__DYE_${v.toUpperCase()}__`] = `'${dye(v).open}'`
-    dyeReplacements[`__DYE_BG_${v.toUpperCase()}__`] = `'${dye(`bg-${v}`).open}'`
+    dyeReplacements[`__DYE_${v.toUpperCase()}__`] = `"${dye(v).open}"`
+    dyeReplacements[`__DYE_BG_${v.toUpperCase()}__`] = `"${dye(`bg-${v}`).open}"`
   })
   return dyeReplacements
 }
