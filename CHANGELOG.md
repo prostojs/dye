@@ -1,3 +1,12 @@
+## [0.4.9](https://github.com/prostojs/dye/compare/v0.4.8...v0.4.9) (2025-01-17)
+
+
+### Features
+
+* add common exports ([11c2ea1](https://github.com/prostojs/dye/commit/11c2ea19df6fee3bbc6a6c4eedafff5a6cd6a3c5))
+
+
+
 ## [0.4.8](https://github.com/prostojs/dye/compare/v0.4.7...v0.4.8) (2025-01-16)
 
 
