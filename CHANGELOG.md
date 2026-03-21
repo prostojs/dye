@@ -1,3 +1,7 @@
+## [0.4.10](https://github.com/prostojs/dye/compare/v0.4.9...v0.4.10) (2026-03-21)
+
+
+
 ## [0.4.9](https://github.com/prostojs/dye/compare/v0.4.8...v0.4.9) (2025-01-17)
 
 
