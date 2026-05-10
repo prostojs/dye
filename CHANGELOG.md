@@ -1,3 +1,12 @@
+# [0.5.0](https://github.com/prostojs/dye/compare/v0.4.10...v0.5.0) (2026-05-10)
+
+
+### Features
+
+* expose globals from main types, add runtime-fallback and lint manifests, bump vulnerable deps ([98f087c](https://github.com/prostojs/dye/commit/98f087c6f9812c6d95eba2382447ba700b53ff20))
+
+
+
 ## [0.4.10](https://github.com/prostojs/dye/compare/v0.4.9...v0.4.10) (2026-03-21)
 
 
