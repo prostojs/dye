@@ -10,8 +10,9 @@ export default defineConfig([
         entry: [
             'src/plugins/rolldown.ts',
             'src/plugins/vite.ts',
-            'src/plugins/update-configs.ts',
             'src/plugins/common.ts',
+            'src/plugins/runtime-fallback.ts',
+            'src/plugins/runtime-fallback-strip.ts',
         ],
         format: ['esm'],
         outDir: 'dist/plugins',

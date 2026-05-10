@@ -328,3 +328,107 @@ banner('Hello World!', { width: 60 })
 Console output:
 
 <img src="./docs/banner.png" style="max-width: 700px" />
+
+## Build-time replacements (`__DYE_*__`)
+
+dye exposes a set of ambient globals like `__DYE_RED__`, `__DYE_BG_BLUE__`, `__DYE_BOLD__`, etc., that map to ANSI escape sequences. These are intended to be replaced at build time so the resulting bundle contains only the inline strings — no per-call function overhead and no extra runtime branching.
+
+You don't need to wire `define` manually: dye ships ready-made plugins for the common bundlers.
+
+### TypeScript types
+
+The `__DYE_*__` ambient declarations are exposed from the package's main types entry. Anywhere you `import` from `@prostojs/dye`, TypeScript can also see the globals — no extra `compilerOptions.types` entry required.
+
+> **Older versions** also shipped a separate sub-path `@prostojs/dye/global` that consumers added to `compilerOptions.types`. That entry is still available for back-compat but is no longer needed.
+
+### Vite
+
+```js
+// vite.config.ts
+import { defineConfig } from 'vite'
+import dye from '@prostojs/dye/vite'
+
+export default defineConfig({
+  plugins: [dye()],
+})
+```
+
+### Rolldown
+
+```js
+// rolldown.config.ts
+import { defineConfig } from 'rolldown'
+import dye from '@prostojs/dye/rolldown'
+
+export default defineConfig({
+  plugins: [dye()],
+})
+```
+
+> **The plugin is self-sufficient.** It registers the full `__DYE_*__` map under `transform.define`, so you do **not** need to also pass `createDyeReplacements()` into your bundler's top-level `define` option. The two are redundant — pick one or the other (the plugin is preferred).
+
+### Manual `define` (other bundlers)
+
+For bundlers without a dedicated plugin, use the `createDyeReplacements()` helper from the `/common` sub-path:
+
+```js
+import { createDyeReplacements } from '@prostojs/dye/common'
+
+// in your bundler config:
+define: { ...createDyeReplacements() }
+```
+
+### Test mode (strip styling)
+
+Test runners typically want the same `define` setup so dye-using code doesn't hit `ReferenceError`, but with no actual styling — keeping snapshots clean and output uncluttered. Pass `strip: true`:
+
+```js
+// vitest.config.ts
+import { defineConfig } from 'vitest/config'
+import { createDyeReplacements } from '@prostojs/dye/common'
+
+export default defineConfig({
+  define: createDyeReplacements({ strip: true }),
+})
+```
+
+## Lint integrations
+
+dye ships a generated manifest of every `__DYE_*__` global plus shareable lint configs, so you don't have to maintain the list by hand.
+
+- **Raw manifest**: `@prostojs/dye/globals.json` — `Record<string, "readonly">` (same shape consumed by ESLint's `globals` config).
+- **oxlint**: `@prostojs/dye/oxlint` — drop-in `extends` target for `.oxlintrc.json`.
+- **ESLint flat config**: `@prostojs/dye/eslint` — exports a config block with `languageOptions.globals`.
+
+```js
+// eslint.config.js
+import dyeGlobals from '@prostojs/dye/eslint'
+export default [dyeGlobals /* ...your other configs */]
+```
+
+```jsonc
+// .oxlintrc.json
+{
+  "extends": ["@prostojs/dye/oxlint"]
+}
+```
+
+The manifests are regenerated on every `pnpm build`, so when dye adds a new color or modifier, consumers pick it up automatically on upgrade.
+
+## Runtime fallback (no build replacement)
+
+If your code runs without a build step that performs the `__DYE_*__` replacement — for example `ts-node` / `tsx` quick scripts, an unconfigured test runner, or directly importing `src/` through a bundler that doesn't have the dye plugin — `__DYE_*__` references throw `ReferenceError` at runtime.
+
+Two side-effect imports are provided as escape hatches. Import once at the very top of your app entry:
+
+```js
+// Real ANSI values — colors still work
+import '@prostojs/dye/runtime-fallback'
+```
+
+```js
+// Empty strings — no styling, useful for tests / snapshots
+import '@prostojs/dye/runtime-fallback/strip'
+```
+
+The default (`runtime-fallback`) skips any `__DYE_*__` already populated as a non-empty string, so it's safe to leave in place even if some entries are also being replaced at build time.

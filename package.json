@@ -29,6 +29,20 @@
     },
     "./global": {
       "types": "./global.d.ts"
+    },
+    "./globals.json": "./dist/globals.json",
+    "./oxlint": "./dist/oxlint.json",
+    "./eslint": {
+      "require": "./dist/eslint.cjs",
+      "default": "./dist/eslint.cjs"
+    },
+    "./runtime-fallback": {
+      "types": "./dist/plugins/runtime-fallback.d.mts",
+      "import": "./dist/plugins/runtime-fallback.mjs"
+    },
+    "./runtime-fallback/strip": {
+      "types": "./dist/plugins/runtime-fallback-strip.d.mts",
+      "import": "./dist/plugins/runtime-fallback-strip.mjs"
     }
   },
   "files": [
@@ -37,7 +51,7 @@
     "global.d.ts"
   ],
   "scripts": {
-    "build": "tsdown",
+    "build": "tsdown && node scripts/build-manifests.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:cov": "vitest run --coverage",
@@ -48,8 +62,7 @@
     "release:patch": "pnpm test && pnpm lint && pnpm build && npm version patch && git push --follow-tags && npm publish --access public",
     "release:minor": "pnpm test && pnpm lint && pnpm build && npm version minor && git push --follow-tags && npm publish --access public",
     "release:major": "pnpm test && pnpm lint && pnpm build && npm version major && git push --follow-tags && npm publish --access public",
-    "prepare": "husky",
-    "postinstall": "node dist/plugins/update-configs.mjs"
+    "prepare": "husky"
   },
   "repository": {
     "type": "git",
@@ -100,7 +113,21 @@
     "prettier": "3.1.1",
     "tsdown": "^0.21.4",
     "typescript": "^5.7.3",
-    "vite": "^6.0.7",
+    "vite": "^6.4.2",
     "vitest": "^2.1.8"
+  },
+  "pnpm": {
+    "overrides": {
+      "fast-uri": "^3.1.2",
+      "flatted": "^3.4.2",
+      "glob@>=10 <11": "^10.5.0",
+      "handlebars": "^4.7.9",
+      "lodash": "^4.18.0",
+      "minimatch@<4": "^3.1.4",
+      "minimatch@>=9 <10": "^9.0.7",
+      "picomatch@<3": "^2.3.2",
+      "picomatch@>=4 <5": "^4.0.4",
+      "rollup": "^4.59.0"
+    }
   }
 }
