@@ -92,12 +92,12 @@
   },
   "homepage": "https://github.com/prostojs/dye#readme",
   "devDependencies": {
-    "@commitlint/cli": "^19.6.1",
-    "@commitlint/config-conventional": "^19.6.0",
-    "@types/node": "^16.10.3",
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "@types/node": "^16.18.126",
     "@typescript-eslint/eslint-plugin": "6.3.0",
     "@typescript-eslint/parser": "6.3.0",
-    "@vitest/coverage-v8": "^2.1.8",
+    "@vitest/coverage-v8": "^3.2.7",
     "conventional-changelog-cli": "^5.0.0",
     "eslint": "8.55.0",
     "eslint-import-resolver-typescript": "3.6.1",
@@ -111,10 +111,10 @@
     "eslint-plugin-yml": "1.10.0",
     "husky": "^9.1.7",
     "prettier": "3.1.1",
-    "tsdown": "^0.21.4",
-    "typescript": "^5.7.3",
-    "vite": "^6.4.2",
-    "vitest": "^2.1.8"
+    "tsdown": "^0.21.10",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.6",
+    "vitest": "^3.2.7"
   },
   "pnpm": {
     "overrides": {
